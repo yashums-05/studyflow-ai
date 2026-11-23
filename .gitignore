@@ -1,0 +1,22 @@
+# Android & Gradle
+.gradle/
+**/build/
+!**/build/app/outputs/flutter-apk/*.apk
+*.iml
+.idea/
+
+# Flutter & Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Windows
+Thumbs.db
+Desktop.ini

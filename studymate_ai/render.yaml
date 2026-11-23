@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: studymate-ai-backend
+    env: docker
+    dockerfilePath: backend_java/Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8000
