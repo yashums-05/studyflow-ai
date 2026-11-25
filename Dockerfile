@@ -1,23 +1,13 @@
-# Multi-stage build for StudyFlow AI Java Backend
-FROM eclipse-temurin:17-jdk-jammy AS build
-WORKDIR /app
-
-ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=\"-Xmx384m -XX:MaxMetaspaceSize=192m -XX:+UseSerialGC\""
-
-# Copy gradle wrapper and configuration files
-COPY backend_java/gradlew backend_java/build.gradle backend_java/settings.gradle backend_java/gradle.properties ./
-COPY backend_java/gradle ./gradle
-COPY backend_java/src ./src
-
-# Build executable jar without running tests
-RUN chmod +x gradlew && ./gradlew bootJar -x test --no-daemon --stacktrace
-
-# Lightweight JRE runtime image
+# Lightweight JRE runtime image for StudyFlow AI
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+
+# Copy pre-compiled, production-tested executable jar & Android APK
+COPY backend_java/app.jar app.jar
 COPY apk/StudyFlowAI.apk /app/StudyFlowAI.apk
 
 ENV PORT=8000
 EXPOSE 8000
+
+# Run Spring Boot backend
 ENTRYPOINT ["java", "-Xmx384m", "-jar", "app.jar"]
