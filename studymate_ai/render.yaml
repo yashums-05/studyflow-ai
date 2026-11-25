@@ -1,10 +1,12 @@
 services:
   - type: web
-    name: studymate-ai-backend
-    env: docker
-    dockerfilePath: backend_java/Dockerfile
+    name: studyflow-ai-backend
+    runtime: docker
+    dockerfilePath: ./backend_java/Dockerfile
+    dockerContext: ./backend_java
     plan: free
     region: oregon
+    healthCheckPath: /health
     envVars:
       - key: PORT
         value: 8000

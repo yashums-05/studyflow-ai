@@ -1,4 +1,4 @@
-# Multi-stage build for StudyMate AI Java Backend
+# Multi-stage build for StudyFlow AI Java Backend
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 COPY gradlew build.gradle settings.gradle ./
