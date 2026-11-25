@@ -293,8 +293,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               controller: controller,
               decoration: const InputDecoration(
                 labelText: 'Server Base URL',
-                hintText: 'https://your-domain.vercel.app/api/v1',
-                border: OutlineInputBorder(),
+                hintText: 'https://studyflow-ai-backend.onrender.com/api/v1',
+                border: const OutlineInputBorder(),
                 prefixIcon: Icon(Icons.dns_rounded),
               ),
               style: const TextStyle(fontSize: 13),
