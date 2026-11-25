@@ -61,80 +61,48 @@ public class DownloadController {
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "  <meta charset=\"UTF-8\">\n" +
-                "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover\">\n" +
+                "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
                 "  <title>StudyFlow AI &bull; Intelligent Academic Portal & App</title>\n" +
                 "  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n" +
                 "  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" +
-                "  <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap\" rel=\"stylesheet\">\n" +
+                "  <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n" +
                 "  <style>\n" +
-                "    :root {\n" +
-                "      --primary: #6366F1;\n" +
-                "      --primary-hover: #4F46E5;\n" +
-                "      --primary-glow: rgba(99, 102, 241, 0.45);\n" +
-                "      --accent: #EC4899;\n" +
-                "      --cyan: #06B6D4;\n" +
-                "      --bg-dark: #080C17;\n" +
-                "      --bg-surface: #0E1424;\n" +
-                "      --card-bg: rgba(18, 24, 40, 0.75);\n" +
-                "      --card-border: rgba(255, 255, 255, 0.08);\n" +
-                "      --text-main: #F8FAFC;\n" +
-                "      --text-muted: #94A3B8;\n" +
-                "      --text-dim: #64748B;\n" +
-                "      --green: #10B981;\n" +
+                "    *, *::before, *::after {\n" +
+                "      box-sizing: border-box;\n" +
+                "      margin: 0;\n" +
+                "      padding: 0;\n" +
+                "      -webkit-tap-highlight-color: transparent;\n" +
                 "    }\n" +
-                "    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }\n" +
                 "    html, body {\n" +
-                "      background-color: var(--bg-dark);\n" +
-                "      color: var(--text-main);\n" +
+                "      width: 100%;\n" +
+                "      max-width: 100%;\n" +
+                "      overflow-x: hidden;\n" +
+                "      background-color: #080C17;\n" +
+                "      color: #F8FAFC;\n" +
                 "      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;\n" +
                 "      min-height: 100vh;\n" +
-                "      width: 100%;\n" +
-                "      overflow-x: hidden;\n" +
                 "      display: flex;\n" +
                 "      flex-direction: column;\n" +
                 "    }\n" +
-                "    /* Background glow orbs */\n" +
-                "    .glow-orb-1 {\n" +
-                "      position: absolute;\n" +
-                "      top: -100px;\n" +
-                "      left: 50%;\n" +
-                "      transform: translateX(-50%);\n" +
-                "      width: min(800px, 100vw);\n" +
-                "      height: 450px;\n" +
-                "      background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(236, 72, 153, 0.12) 40%, transparent 70%);\n" +
-                "      filter: blur(80px);\n" +
-                "      pointer-events: none;\n" +
-                "      z-index: 0;\n" +
-                "    }\n" +
-                "    .glow-orb-2 {\n" +
-                "      position: absolute;\n" +
-                "      bottom: 5%;\n" +
-                "      right: -100px;\n" +
-                "      width: 450px;\n" +
-                "      height: 450px;\n" +
-                "      background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 60%);\n" +
-                "      filter: blur(90px);\n" +
-                "      pointer-events: none;\n" +
-                "      z-index: 0;\n" +
-                "    }\n" +
-                "    /* Responsive Navbar */\n" +
+                "    /* Navbar */\n" +
                 "    header {\n" +
+                "      width: 100%;\n" +
                 "      position: sticky;\n" +
                 "      top: 0;\n" +
                 "      backdrop-filter: blur(20px);\n" +
                 "      -webkit-backdrop-filter: blur(20px);\n" +
-                "      background: rgba(8, 12, 23, 0.85);\n" +
-                "      border-bottom: 1px solid var(--card-border);\n" +
+                "      background: rgba(8, 12, 23, 0.9);\n" +
+                "      border-bottom: 1px solid rgba(255, 255, 255, 0.08);\n" +
                 "      z-index: 50;\n" +
-                "      padding: 14px 20px;\n" +
+                "      padding: 12px 16px;\n" +
                 "    }\n" +
                 "    .nav-container {\n" +
-                "      max-width: 1200px;\n" +
+                "      max-width: 1140px;\n" +
                 "      margin: 0 auto;\n" +
                 "      display: flex;\n" +
                 "      justify-content: space-between;\n" +
                 "      align-items: center;\n" +
-                "      gap: 12px;\n" +
+                "      width: 100%;\n" +
                 "    }\n" +
                 "    .brand {\n" +
                 "      display: flex;\n" +
@@ -142,22 +110,23 @@ public class DownloadController {
                 "      gap: 10px;\n" +
                 "      text-decoration: none;\n" +
                 "      color: #fff;\n" +
-                "      flex-shrink: 0;\n" +
                 "    }\n" +
                 "    .brand-icon {\n" +
-                "      width: 36px;\n" +
-                "      height: 36px;\n" +
+                "      width: 34px;\n" +
+                "      height: 34px;\n" +
                 "      background: linear-gradient(135deg, #6366F1, #EC4899);\n" +
-                "      border-radius: 10px;\n" +
+                "      border-radius: 9px;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      box-shadow: 0 4px 12px var(--primary-glow);\n" +
+                "      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);\n" +
+                "      flex-shrink: 0;\n" +
                 "    }\n" +
                 "    .brand-title {\n" +
-                "      font-size: 19px;\n" +
+                "      font-size: 18px;\n" +
                 "      font-weight: 800;\n" +
-                "      letter-spacing: -0.5px;\n" +
+                "      letter-spacing: -0.4px;\n" +
+                "      white-space: nowrap;\n" +
                 "    }\n" +
                 "    .brand-title span { color: #818CF8; }\n" +
                 "    .nav-actions {\n" +
@@ -171,7 +140,7 @@ public class DownloadController {
                 "      gap: 7px;\n" +
                 "      background: rgba(16, 185, 129, 0.12);\n" +
                 "      border: 1px solid rgba(16, 185, 129, 0.3);\n" +
-                "      padding: 6px 12px;\n" +
+                "      padding: 5px 12px;\n" +
                 "      border-radius: 999px;\n" +
                 "      font-size: 12px;\n" +
                 "      font-weight: 600;\n" +
@@ -184,15 +153,9 @@ public class DownloadController {
                 "      background: #10B981;\n" +
                 "      border-radius: 50%;\n" +
                 "      box-shadow: 0 0 8px #10B981;\n" +
-                "      animation: pulse 2s infinite;\n" +
-                "    }\n" +
-                "    @keyframes pulse {\n" +
-                "      0% { transform: scale(0.95); opacity: 0.8; }\n" +
-                "      50% { transform: scale(1.3); opacity: 1; }\n" +
-                "      100% { transform: scale(0.95); opacity: 0.8; }\n" +
                 "    }\n" +
                 "    .btn-nav-install {\n" +
-                "      background: linear-gradient(135deg, var(--primary), var(--primary-hover));\n" +
+                "      background: linear-gradient(135deg, #6366F1, #4F46E5);\n" +
                 "      color: #fff;\n" +
                 "      padding: 8px 16px;\n" +
                 "      border-radius: 10px;\n" +
@@ -205,45 +168,46 @@ public class DownloadController {
                 "      transition: all 0.2s;\n" +
                 "    }\n" +
                 "    .btn-nav-install:hover {\n" +
-                "      box-shadow: 0 4px 16px var(--primary-glow);\n" +
-                "      transform: translateY(-1px);\n" +
+                "      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5);\n" +
                 "    }\n" +
-                "    /* Responsive Main Wrapper */\n" +
+                "    /* Main Container */\n" +
                 "    .main-wrap {\n" +
-                "      max-width: 1200px;\n" +
                 "      width: 100%;\n" +
+                "      max-width: 1140px;\n" +
                 "      margin: 0 auto;\n" +
-                "      padding: 36px 20px 64px 20px;\n" +
+                "      padding: 32px 16px 56px 16px;\n" +
+                "      flex: 1;\n" +
                 "      position: relative;\n" +
                 "      z-index: 10;\n" +
-                "      flex: 1;\n" +
                 "    }\n" +
-                "    /* Desktop Hero Split (55% Copy, 45% Phone Mockup) */\n" +
+                "    /* Responsive Hero Grid */\n" +
                 "    .hero-grid {\n" +
                 "      display: grid;\n" +
-                "      grid-template-columns: 1.1fr 0.9fr;\n" +
-                "      gap: 40px;\n" +
+                "      grid-template-columns: 1.15fr 0.85fr;\n" +
+                "      gap: 36px;\n" +
                 "      align-items: center;\n" +
+                "      width: 100%;\n" +
                 "    }\n" +
                 "    .hero-badge {\n" +
                 "      display: inline-flex;\n" +
                 "      align-items: center;\n" +
-                "      gap: 8px;\n" +
+                "      gap: 6px;\n" +
                 "      background: rgba(99, 102, 241, 0.15);\n" +
                 "      border: 1px solid rgba(99, 102, 241, 0.35);\n" +
                 "      color: #A5B4FC;\n" +
-                "      font-size: 13px;\n" +
+                "      font-size: 12px;\n" +
                 "      font-weight: 700;\n" +
                 "      padding: 6px 14px;\n" +
                 "      border-radius: 999px;\n" +
-                "      margin-bottom: 20px;\n" +
+                "      margin-bottom: 16px;\n" +
                 "    }\n" +
                 "    h1.hero-title {\n" +
-                "      font-size: clamp(30px, 4.4vw, 50px);\n" +
+                "      font-size: clamp(26px, 5.5vw, 46px);\n" +
                 "      font-weight: 800;\n" +
-                "      line-height: 1.15;\n" +
-                "      margin-bottom: 18px;\n" +
-                "      letter-spacing: -0.8px;\n" +
+                "      line-height: 1.18;\n" +
+                "      margin-bottom: 14px;\n" +
+                "      letter-spacing: -0.6px;\n" +
+                "      word-break: break-word;\n" +
                 "    }\n" +
                 "    .gradient-text {\n" +
                 "      background: linear-gradient(135deg, #FFFFFF 15%, #A5B4FC 60%, #EC4899 100%);\n" +
@@ -251,25 +215,24 @@ public class DownloadController {
                 "      -webkit-text-fill-color: transparent;\n" +
                 "    }\n" +
                 "    p.hero-desc {\n" +
-                "      color: var(--text-muted);\n" +
-                "      font-size: clamp(15px, 1.8vw, 17px);\n" +
+                "      color: #94A3B8;\n" +
+                "      font-size: clamp(14px, 2.2vw, 16px);\n" +
                 "      line-height: 1.6;\n" +
-                "      margin-bottom: 28px;\n" +
-                "      max-width: 540px;\n" +
+                "      margin-bottom: 24px;\n" +
                 "    }\n" +
                 "    .cta-row {\n" +
                 "      display: flex;\n" +
                 "      flex-wrap: wrap;\n" +
                 "      align-items: center;\n" +
-                "      gap: 14px;\n" +
-                "      margin-bottom: 26px;\n" +
+                "      gap: 12px;\n" +
+                "      margin-bottom: 22px;\n" +
                 "    }\n" +
                 "    .btn-hero-install {\n" +
                 "      background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);\n" +
                 "      color: #FFFFFF;\n" +
-                "      padding: 16px 32px;\n" +
+                "      padding: 15px 28px;\n" +
                 "      border-radius: 14px;\n" +
-                "      font-size: 16px;\n" +
+                "      font-size: 15px;\n" +
                 "      font-weight: 800;\n" +
                 "      border: none;\n" +
                 "      cursor: pointer;\n" +
@@ -277,21 +240,21 @@ public class DownloadController {
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
                 "      gap: 10px;\n" +
-                "      box-shadow: 0 8px 24px var(--primary-glow);\n" +
-                "      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);\n" +
+                "      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);\n" +
+                "      transition: all 0.2s;\n" +
                 "      text-decoration: none;\n" +
                 "    }\n" +
                 "    .btn-hero-install:hover {\n" +
                 "      transform: translateY(-2px);\n" +
-                "      box-shadow: 0 14px 36px rgba(99, 102, 241, 0.55);\n" +
+                "      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.6);\n" +
                 "    }\n" +
                 "    .btn-secondary {\n" +
                 "      background: rgba(255, 255, 255, 0.05);\n" +
                 "      color: #CBD5E1;\n" +
-                "      border: 1px solid var(--card-border);\n" +
-                "      padding: 16px 22px;\n" +
+                "      border: 1px solid rgba(255, 255, 255, 0.1);\n" +
+                "      padding: 15px 22px;\n" +
                 "      border-radius: 14px;\n" +
-                "      font-size: 15px;\n" +
+                "      font-size: 14px;\n" +
                 "      font-weight: 700;\n" +
                 "      cursor: pointer;\n" +
                 "      text-decoration: none;\n" +
@@ -309,60 +272,55 @@ public class DownloadController {
                 "      display: flex;\n" +
                 "      flex-wrap: wrap;\n" +
                 "      align-items: center;\n" +
-                "      gap: 16px;\n" +
-                "      color: var(--text-dim);\n" +
-                "      font-size: 13px;\n" +
+                "      gap: 14px;\n" +
+                "      color: #64748B;\n" +
+                "      font-size: 12px;\n" +
                 "      font-weight: 600;\n" +
                 "    }\n" +
                 "    .meta-pills div {\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
-                "      gap: 5px;\n" +
+                "      gap: 4px;\n" +
                 "    }\n" +
-                "    /* Realistic Smartphone Frame (Aligned for Desktop & Mobile) */\n" +
+                "    /* Desktop Phone Mockup */\n" +
                 "    .phone-mockup-wrapper {\n" +
                 "      display: flex;\n" +
                 "      flex-direction: column;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      position: relative;\n" +
+                "      width: 100%;\n" +
                 "    }\n" +
                 "    .phone-frame {\n" +
-                "      width: 290px;\n" +
-                "      height: 580px;\n" +
+                "      width: 270px;\n" +
+                "      height: 540px;\n" +
                 "      background: #000000;\n" +
-                "      border-radius: 44px;\n" +
-                "      padding: 10px;\n" +
+                "      border-radius: 40px;\n" +
+                "      padding: 9px;\n" +
                 "      box-shadow:\n" +
                 "        0 0 0 3px #1F2937,\n" +
-                "        0 25px 60px rgba(0, 0, 0, 0.8),\n" +
-                "        0 0 40px rgba(99, 102, 241, 0.25);\n" +
+                "        0 20px 50px rgba(0, 0, 0, 0.75),\n" +
+                "        0 0 30px rgba(99, 102, 241, 0.2);\n" +
                 "      position: relative;\n" +
                 "      overflow: hidden;\n" +
-                "      border: 4px solid #374151;\n" +
-                "      transition: transform 0.3s ease;\n" +
-                "    }\n" +
-                "    .phone-frame:hover {\n" +
-                "      transform: translateY(-6px);\n" +
+                "      border: 3px solid #374151;\n" +
                 "    }\n" +
                 "    .phone-notch {\n" +
-                "      width: 100px;\n" +
-                "      height: 18px;\n" +
+                "      width: 90px;\n" +
+                "      height: 16px;\n" +
                 "      background: #000000;\n" +
-                "      border-radius: 12px;\n" +
+                "      border-radius: 10px;\n" +
                 "      position: absolute;\n" +
-                "      top: 14px;\n" +
+                "      top: 12px;\n" +
                 "      left: 50%;\n" +
                 "      transform: translateX(-50%);\n" +
                 "      z-index: 30;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      gap: 6px;\n" +
                 "    }\n" +
                 "    .camera-dot {\n" +
-                "      width: 7px;\n" +
-                "      height: 7px;\n" +
+                "      width: 6px;\n" +
+                "      height: 6px;\n" +
                 "      background: #111827;\n" +
                 "      border: 1px solid #374151;\n" +
                 "      border-radius: 50%;\n" +
@@ -371,73 +329,70 @@ public class DownloadController {
                 "      width: 100%;\n" +
                 "      height: 100%;\n" +
                 "      background: #0B0F19;\n" +
-                "      border-radius: 34px;\n" +
+                "      border-radius: 32px;\n" +
                 "      overflow: hidden;\n" +
                 "      display: flex;\n" +
                 "      flex-direction: column;\n" +
-                "      position: relative;\n" +
-                "      padding-top: 26px;\n" +
+                "      padding-top: 24px;\n" +
                 "    }\n" +
                 "    .screen-status-bar {\n" +
                 "      display: flex;\n" +
                 "      justify-content: space-between;\n" +
                 "      align-items: center;\n" +
-                "      padding: 4px 18px;\n" +
-                "      font-size: 11px;\n" +
+                "      padding: 4px 16px;\n" +
+                "      font-size: 10px;\n" +
                 "      font-weight: 700;\n" +
                 "      color: #94A3B8;\n" +
                 "    }\n" +
                 "    .screen-header {\n" +
-                "      padding: 10px 16px;\n" +
+                "      padding: 8px 14px;\n" +
                 "      display: flex;\n" +
                 "      justify-content: space-between;\n" +
                 "      align-items: center;\n" +
                 "    }\n" +
                 "    .screen-avatar {\n" +
-                "      width: 32px;\n" +
-                "      height: 32px;\n" +
+                "      width: 28px;\n" +
+                "      height: 28px;\n" +
                 "      border-radius: 50%;\n" +
                 "      background: linear-gradient(135deg, #6366F1, #EC4899);\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
                 "      font-weight: 800;\n" +
-                "      font-size: 12px;\n" +
+                "      font-size: 11px;\n" +
                 "    }\n" +
                 "    .screen-content {\n" +
-                "      padding: 8px 14px;\n" +
+                "      padding: 6px 12px;\n" +
                 "      flex: 1;\n" +
                 "      display: flex;\n" +
                 "      flex-direction: column;\n" +
-                "      gap: 10px;\n" +
-                "      overflow-y: hidden;\n" +
+                "      gap: 8px;\n" +
                 "    }\n" +
                 "    .app-card-mock {\n" +
                 "      background: rgba(255, 255, 255, 0.05);\n" +
                 "      border: 1px solid rgba(255, 255, 255, 0.08);\n" +
-                "      border-radius: 14px;\n" +
-                "      padding: 10px 12px;\n" +
+                "      border-radius: 12px;\n" +
+                "      padding: 9px 10px;\n" +
                 "    }\n" +
                 "    .app-card-mock h5 {\n" +
-                "      font-size: 12px;\n" +
+                "      font-size: 11px;\n" +
                 "      font-weight: 700;\n" +
                 "      color: #F1F5F9;\n" +
-                "      margin-bottom: 3px;\n" +
+                "      margin-bottom: 2px;\n" +
                 "      display: flex;\n" +
                 "      justify-content: space-between;\n" +
                 "    }\n" +
                 "    .app-card-mock p {\n" +
-                "      font-size: 11px;\n" +
+                "      font-size: 10px;\n" +
                 "      color: #94A3B8;\n" +
                 "      line-height: 1.3;\n" +
                 "    }\n" +
                 "    .app-tag {\n" +
-                "      display: inline-block;\n" +
                 "      background: rgba(99, 102, 241, 0.25);\n" +
                 "      color: #A5B4FC;\n" +
                 "      font-size: 9px;\n" +
                 "      font-weight: 800;\n" +
-                "      padding: 2px 6px;\n" +
+                "      padding: 1px 5px;\n" +
                 "      border-radius: 4px;\n" +
                 "    }\n" +
                 "    .screen-bottom-nav {\n" +
@@ -446,98 +401,98 @@ public class DownloadController {
                 "      border-top: 1px solid rgba(255, 255, 255, 0.06);\n" +
                 "      display: flex;\n" +
                 "      justify-content: space-around;\n" +
-                "      padding: 10px 4px 14px 4px;\n" +
-                "      font-size: 10px;\n" +
+                "      padding: 8px 4px 12px 4px;\n" +
+                "      font-size: 9px;\n" +
                 "      color: #64748B;\n" +
                 "    }\n" +
                 "    .nav-item-active {\n" +
                 "      color: #818CF8;\n" +
                 "      font-weight: 700;\n" +
                 "    }\n" +
-                "    /* QR Code Box (Desktop & Mobile Adaptive) */\n" +
                 "    .qr-card-desktop {\n" +
-                "      margin-top: 18px;\n" +
-                "      background: var(--card-bg);\n" +
-                "      border: 1px solid var(--card-border);\n" +
-                "      border-radius: 16px;\n" +
-                "      padding: 14px;\n" +
+                "      margin-top: 16px;\n" +
+                "      background: rgba(18, 24, 40, 0.75);\n" +
+                "      border: 1px solid rgba(255, 255, 255, 0.08);\n" +
+                "      border-radius: 14px;\n" +
+                "      padding: 12px;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
-                "      gap: 14px;\n" +
-                "      width: 290px;\n" +
+                "      gap: 12px;\n" +
+                "      width: 270px;\n" +
                 "    }\n" +
                 "    .qr-card-desktop img {\n" +
-                "      width: 68px;\n" +
-                "      height: 68px;\n" +
-                "      border-radius: 8px;\n" +
+                "      width: 60px;\n" +
+                "      height: 60px;\n" +
+                "      border-radius: 6px;\n" +
                 "      background: #fff;\n" +
-                "      padding: 4px;\n" +
+                "      padding: 3px;\n" +
                 "      flex-shrink: 0;\n" +
                 "    }\n" +
                 "    .qr-card-info h6 {\n" +
-                "      font-size: 12px;\n" +
+                "      font-size: 11px;\n" +
                 "      font-weight: 700;\n" +
                 "      color: #F1F5F9;\n" +
                 "      margin-bottom: 2px;\n" +
                 "    }\n" +
                 "    .qr-card-info p {\n" +
-                "      font-size: 11px;\n" +
-                "      color: var(--text-dim);\n" +
+                "      font-size: 10px;\n" +
+                "      color: #64748B;\n" +
                 "      line-height: 1.3;\n" +
                 "    }\n" +
                 "    /* Features Section */\n" +
                 "    .features-section {\n" +
-                "      margin-top: 60px;\n" +
+                "      margin-top: 48px;\n" +
+                "      width: 100%;\n" +
                 "    }\n" +
                 "    .section-title {\n" +
                 "      text-align: center;\n" +
-                "      margin-bottom: 36px;\n" +
+                "      margin-bottom: 28px;\n" +
                 "    }\n" +
                 "    .section-title h2 {\n" +
-                "      font-size: clamp(24px, 3.5vw, 32px);\n" +
+                "      font-size: clamp(22px, 3.5vw, 30px);\n" +
                 "      font-weight: 800;\n" +
-                "      margin-bottom: 8px;\n" +
-                "      letter-spacing: -0.5px;\n" +
+                "      margin-bottom: 6px;\n" +
+                "      letter-spacing: -0.4px;\n" +
                 "    }\n" +
                 "    .section-title p {\n" +
-                "      color: var(--text-muted);\n" +
+                "      color: #94A3B8;\n" +
                 "      font-size: 14px;\n" +
                 "    }\n" +
                 "    .cards-grid {\n" +
                 "      display: grid;\n" +
-                "      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n" +
-                "      gap: 20px;\n" +
+                "      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n" +
+                "      gap: 16px;\n" +
+                "      width: 100%;\n" +
                 "    }\n" +
                 "    .feat-card {\n" +
-                "      background: var(--card-bg);\n" +
-                "      border: 1px solid var(--card-border);\n" +
-                "      border-radius: 18px;\n" +
-                "      padding: 22px;\n" +
-                "      transition: all 0.25s;\n" +
+                "      background: rgba(18, 24, 40, 0.75);\n" +
+                "      border: 1px solid rgba(255, 255, 255, 0.08);\n" +
+                "      border-radius: 16px;\n" +
+                "      padding: 20px;\n" +
+                "      transition: all 0.2s;\n" +
                 "    }\n" +
                 "    .feat-card:hover {\n" +
-                "      transform: translateY(-3px);\n" +
                 "      border-color: rgba(99, 102, 241, 0.35);\n" +
-                "      box-shadow: 0 12px 28px rgba(0,0,0,0.35);\n" +
+                "      transform: translateY(-2px);\n" +
                 "    }\n" +
                 "    .feat-icon {\n" +
-                "      width: 40px;\n" +
-                "      height: 40px;\n" +
+                "      width: 38px;\n" +
+                "      height: 38px;\n" +
                 "      border-radius: 10px;\n" +
                 "      background: rgba(99, 102, 241, 0.15);\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      font-size: 20px;\n" +
-                "      margin-bottom: 14px;\n" +
+                "      font-size: 18px;\n" +
+                "      margin-bottom: 12px;\n" +
                 "    }\n" +
                 "    .feat-card h3 {\n" +
-                "      font-size: 16px;\n" +
+                "      font-size: 15px;\n" +
                 "      font-weight: 700;\n" +
-                "      margin-bottom: 6px;\n" +
+                "      margin-bottom: 4px;\n" +
                 "    }\n" +
                 "    .feat-card p {\n" +
-                "      color: var(--text-muted);\n" +
+                "      color: #94A3B8;\n" +
                 "      font-size: 13px;\n" +
                 "      line-height: 1.5;\n" +
                 "    }\n" +
@@ -545,7 +500,7 @@ public class DownloadController {
                 "    .modal-backdrop {\n" +
                 "      position: fixed;\n" +
                 "      inset: 0;\n" +
-                "      background: rgba(0, 0, 0, 0.82);\n" +
+                "      background: rgba(0, 0, 0, 0.85);\n" +
                 "      backdrop-filter: blur(12px);\n" +
                 "      -webkit-backdrop-filter: blur(12px);\n" +
                 "      z-index: 100;\n" +
@@ -553,74 +508,53 @@ public class DownloadController {
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
                 "      padding: 16px;\n" +
-                "      animation: fadeIn 0.2s ease-out forwards;\n" +
-                "    }\n" +
-                "    @keyframes fadeIn {\n" +
-                "      from { opacity: 0; }\n" +
-                "      to { opacity: 1; }\n" +
                 "    }\n" +
                 "    .modal-content {\n" +
                 "      background: #0E1322;\n" +
                 "      border: 1px solid rgba(99, 102, 241, 0.35);\n" +
-                "      border-radius: 24px;\n" +
-                "      max-width: 480px;\n" +
+                "      border-radius: 20px;\n" +
+                "      max-width: 440px;\n" +
                 "      width: 100%;\n" +
                 "      max-height: 90vh;\n" +
                 "      overflow-y: auto;\n" +
-                "      padding: 30px 24px;\n" +
-                "      box-shadow: 0 24px 60px rgba(0,0,0,0.8), 0 0 35px rgba(99, 102, 241, 0.2);\n" +
+                "      padding: 24px 20px;\n" +
+                "      box-shadow: 0 20px 50px rgba(0,0,0,0.8);\n" +
                 "      position: relative;\n" +
                 "      text-align: center;\n" +
-                "      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;\n" +
-                "    }\n" +
-                "    @keyframes slideUp {\n" +
-                "      from { transform: translateY(24px) scale(0.96); opacity: 0; }\n" +
-                "      to { transform: translateY(0) scale(1); opacity: 1; }\n" +
                 "    }\n" +
                 "    .modal-close {\n" +
                 "      position: absolute;\n" +
-                "      top: 16px;\n" +
-                "      right: 16px;\n" +
+                "      top: 14px;\n" +
+                "      right: 14px;\n" +
                 "      background: rgba(255, 255, 255, 0.08);\n" +
                 "      border: none;\n" +
-                "      color: var(--text-muted);\n" +
-                "      width: 32px;\n" +
-                "      height: 32px;\n" +
+                "      color: #94A3B8;\n" +
+                "      width: 28px;\n" +
+                "      height: 28px;\n" +
                 "      border-radius: 50%;\n" +
                 "      cursor: pointer;\n" +
-                "      font-size: 18px;\n" +
+                "      font-size: 16px;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      transition: all 0.2s;\n" +
-                "    }\n" +
-                "    .modal-close:hover {\n" +
-                "      background: rgba(255, 255, 255, 0.18);\n" +
-                "      color: #fff;\n" +
                 "    }\n" +
                 "    .download-anim-icon {\n" +
-                "      width: 56px;\n" +
-                "      height: 56px;\n" +
+                "      width: 50px;\n" +
+                "      height: 50px;\n" +
                 "      background: linear-gradient(135deg, #10B981, #059669);\n" +
-                "      border-radius: 16px;\n" +
-                "      margin: 0 auto 14px auto;\n" +
+                "      border-radius: 14px;\n" +
+                "      margin: 0 auto 12px auto;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
-                "      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);\n" +
-                "      animation: bounce 1.2s infinite alternate ease-in-out;\n" +
-                "    }\n" +
-                "    @keyframes bounce {\n" +
-                "      from { transform: translateY(0); }\n" +
-                "      to { transform: translateY(-6px); }\n" +
                 "    }\n" +
                 "    .progress-bar-container {\n" +
                 "      width: 100%;\n" +
-                "      height: 7px;\n" +
+                "      height: 6px;\n" +
                 "      background: rgba(255, 255, 255, 0.08);\n" +
                 "      border-radius: 999px;\n" +
                 "      overflow: hidden;\n" +
-                "      margin: 18px 0 20px 0;\n" +
+                "      margin: 16px 0;\n" +
                 "    }\n" +
                 "    .progress-bar-fill {\n" +
                 "      height: 100%;\n" +
@@ -633,15 +567,15 @@ public class DownloadController {
                 "      text-align: left;\n" +
                 "      background: rgba(255, 255, 255, 0.03);\n" +
                 "      border: 1px solid rgba(255, 255, 255, 0.07);\n" +
-                "      border-radius: 16px;\n" +
-                "      padding: 16px;\n" +
-                "      margin-bottom: 20px;\n" +
+                "      border-radius: 14px;\n" +
+                "      padding: 14px;\n" +
+                "      margin-bottom: 16px;\n" +
                 "    }\n" +
                 "    .step-item {\n" +
                 "      display: flex;\n" +
                 "      align-items: flex-start;\n" +
                 "      gap: 10px;\n" +
-                "      margin-bottom: 12px;\n" +
+                "      margin-bottom: 10px;\n" +
                 "    }\n" +
                 "    .step-item:last-child { margin-bottom: 0; }\n" +
                 "    .step-num {\n" +
@@ -649,20 +583,20 @@ public class DownloadController {
                 "      color: #A5B4FC;\n" +
                 "      font-weight: 800;\n" +
                 "      font-size: 11px;\n" +
-                "      width: 22px;\n" +
-                "      height: 22px;\n" +
+                "      width: 20px;\n" +
+                "      height: 20px;\n" +
                 "      border-radius: 50%;\n" +
                 "      display: flex;\n" +
                 "      align-items: center;\n" +
                 "      justify-content: center;\n" +
                 "      flex-shrink: 0;\n" +
-                "      margin-top: 1px;\n" +
+                "      margin-top: 2px;\n" +
                 "    }\n" +
                 "    .step-text h4 { font-size: 13px; font-weight: 700; color: #F1F5F9; margin-bottom: 2px; }\n" +
-                "    .step-text p { font-size: 12px; color: var(--text-muted); line-height: 1.35; }\n" +
+                "    .step-text p { font-size: 11px; color: #94A3B8; line-height: 1.35; }\n" +
                 "    .modal-footer-note {\n" +
                 "      font-size: 12px;\n" +
-                "      color: var(--text-dim);\n" +
+                "      color: #64748B;\n" +
                 "    }\n" +
                 "    .modal-footer-note a {\n" +
                 "      color: #818CF8;\n" +
@@ -670,76 +604,81 @@ public class DownloadController {
                 "      text-decoration: underline;\n" +
                 "      cursor: pointer;\n" +
                 "    }\n" +
-                "    /* Mobile Viewport Alignments (<768px) */\n" +
-                "    @media (max-width: 768px) {\n" +
-                "      header { padding: 12px 16px; }\n" +
-                "      .status-pill span.status-text { display: none; }\n" +
-                "      .status-pill { padding: 6px 8px; }\n" +
-                "      .main-wrap { padding: 24px 16px 48px 16px; }\n" +
+                "    /* MOBILE PHONE VIEWPORT ALIGNMENTS (<820px) */\n" +
+                "    @media (max-width: 820px) {\n" +
+                "      header { padding: 10px 14px; }\n" +
+                "      .status-pill { display: none; }\n" +
+                "      .main-wrap {\n" +
+                "        padding: 24px 14px 48px 14px;\n" +
+                "      }\n" +
                 "      .hero-grid {\n" +
                 "        grid-template-columns: 1fr;\n" +
-                "        gap: 32px;\n" +
+                "        gap: 24px;\n" +
                 "        text-align: center;\n" +
                 "      }\n" +
-                "      .hero-badge { margin: 0 auto 16px auto; }\n" +
-                "      p.hero-desc { margin: 0 auto 24px auto; }\n" +
+                "      .hero-badge {\n" +
+                "        margin: 0 auto 14px auto;\n" +
+                "      }\n" +
+                "      p.hero-desc {\n" +
+                "        margin: 0 auto 20px auto;\n" +
+                "        max-width: 100%;\n" +
+                "      }\n" +
                 "      .cta-row {\n" +
                 "        flex-direction: column;\n" +
+                "        align-items: center;\n" +
                 "        width: 100%;\n" +
                 "        gap: 10px;\n" +
+                "        margin: 0 auto 20px auto;\n" +
                 "      }\n" +
                 "      .btn-hero-install, .btn-secondary {\n" +
                 "        width: 100%;\n" +
-                "        padding: 16px 20px;\n" +
-                "        font-size: 16px;\n" +
+                "        max-width: 340px;\n" +
+                "        padding: 15px 16px;\n" +
                 "      }\n" +
                 "      .meta-pills {\n" +
                 "        justify-content: center;\n" +
-                "        gap: 12px;\n" +
-                "        font-size: 12px;\n" +
+                "        gap: 10px;\n" +
+                "        font-size: 11px;\n" +
                 "      }\n" +
+                "      /* Hide duplicate phone frame on actual mobile phone screen */\n" +
                 "      .phone-frame {\n" +
-                "        width: 260px;\n" +
-                "        height: 520px;\n" +
-                "        border-radius: 38px;\n" +
+                "        display: none;\n" +
                 "      }\n" +
                 "      .qr-card-desktop {\n" +
-                "        width: 100%;\n" +
-                "        max-width: 300px;\n" +
+                "        display: none;\n" +
+                "      }\n" +
+                "      .phone-mockup-wrapper {\n" +
+                "        display: none;\n" +
                 "      }\n" +
                 "    }\n" +
-                "    /* Extra Small Phone (<400px) */\n" +
-                "    @media (max-width: 400px) {\n" +
-                "      .brand-title { font-size: 17px; }\n" +
-                "      .btn-nav-install { padding: 6px 12px; font-size: 12px; }\n" +
-                "      .phone-frame { width: 230px; height: 460px; }\n" +
-                "    }\n" +
                 "    footer {\n" +
-                "      border-top: 1px solid var(--card-border);\n" +
-                "      padding: 20px 16px;\n" +
+                "      border-top: 1px solid rgba(255, 255, 255, 0.08);\n" +
+                "      padding: 16px;\n" +
                 "      text-align: center;\n" +
-                "      color: var(--text-dim);\n" +
-                "      font-size: 12px;\n" +
-                "      background: rgba(8, 12, 23, 0.7);\n" +
+                "      color: #64748B;\n" +
+                "      font-size: 11px;\n" +
+                "      background: rgba(8, 12, 23, 0.8);\n" +
                 "    }\n" +
                 "  </style>\n" +
                 "</head>\n" +
                 "<body>\n" +
-                "  <div class=\"glow-orb-1\"></div>\n" +
-                "  <div class=\"glow-orb-2\"></div>\n" +
+                "  <!-- Constrained background glow with zero overflow -->\n" +
+                "  <div style=\"position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;\">\n" +
+                "    <div style=\"position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: min(500px, 100vw); height: 350px; background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(236, 72, 153, 0.12) 40%, transparent 70%); filter: blur(50px);\"></div>\n" +
+                "  </div>\n" +
                 "\n" +
                 "  <header>\n" +
                 "    <div class=\"nav-container\">\n" +
                 "      <a href=\"/\" class=\"brand\">\n" +
                 "        <div class=\"brand-icon\">\n" +
-                "          <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"></path><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"></path></svg>\n" +
+                "          <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"></path><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"></path></svg>\n" +
                 "        </div>\n" +
                 "        <div class=\"brand-title\">StudyFlow<span>AI</span></div>\n" +
                 "      </a>\n" +
                 "      <div class=\"nav-actions\">\n" +
                 "        <div class=\"status-pill\">\n" +
                 "          <div class=\"pulse-dot\"></div>\n" +
-                "          <span class=\"status-text\">Cloud Active</span>\n" +
+                "          <span>Cloud Active</span>\n" +
                 "        </div>\n" +
                 "        <button class=\"btn-nav-install\" onclick=\"startInstallation()\">Install App ⬇</button>\n" +
                 "      </div>\n" +
@@ -758,15 +697,15 @@ public class DownloadController {
                 "          <span class=\"gradient-text\">Academic Companion</span>\n" +
                 "        </h1>\n" +
                 "        <p class=\"hero-desc\">\n" +
-                "          Upload your class timetables, syllabus, calendar of events, and exam schedules. StudyFlow AI crafts balanced study routines, highlights weak areas, and mentors you through each exam.\n" +
+                "          Upload class timetables, syllabus, calendar of events, and exam schedules. StudyFlow AI crafts balanced study routines, highlights weak areas, and mentors you through each exam.\n" +
                 "        </p>\n" +
                 "        <div class=\"cta-row\">\n" +
                 "          <button class=\"btn-hero-install\" id=\"mainInstallBtn\" onclick=\"startInstallation()\">\n" +
-                "            <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7 10 12 15 17 10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>\n" +
+                "            <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7 10 12 15 17 10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>\n" +
                 "            Install StudyFlow AI\n" +
                 "          </button>\n" +
                 "          <a href=\"/download/app.apk\" class=\"btn-secondary\">\n" +
-                "            <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5\"/></svg>\n" +
+                "            <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5\"/></svg>\n" +
                 "            Direct APK File (59MB)\n" +
                 "          </a>\n" +
                 "        </div>\n" +
@@ -777,7 +716,7 @@ public class DownloadController {
                 "        </div>\n" +
                 "      </div>\n" +
                 "\n" +
-                "      <!-- Right Column: Realistic Phone Mockup & Quick QR -->\n" +
+                "      <!-- Right Column: Realistic Phone Mockup & Quick QR (Desktop Viewports) -->\n" +
                 "      <div class=\"phone-mockup-wrapper\">\n" +
                 "        <div class=\"phone-frame\">\n" +
                 "          <div class=\"phone-notch\">\n" +
@@ -790,36 +729,31 @@ public class DownloadController {
                 "            </div>\n" +
                 "            <div class=\"screen-header\">\n" +
                 "              <div>\n" +
-                "                <div style=\"font-size: 11px; color: #94A3B8;\">Welcome Back</div>\n" +
-                "                <div style=\"font-size: 13px; font-weight: 800; color: #F1F5F9;\">StudyFlow AI</div>\n" +
+                "                <div style=\"font-size: 10px; color: #94A3B8;\">Welcome Back</div>\n" +
+                "                <div style=\"font-size: 12px; font-weight: 800; color: #F1F5F9;\">StudyFlow AI</div>\n" +
                 "              </div>\n" +
                 "              <div class=\"screen-avatar\">AI</div>\n" +
                 "            </div>\n" +
                 "            <div class=\"screen-content\">\n" +
-                "              <!-- Academic Hub Card -->\n" +
                 "              <div class=\"app-card-mock\" style=\"background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.15)); border-color: rgba(99, 102, 241, 0.3);\">\n" +
                 "                <h5><span>📚 Academic Hub</span> <span class=\"app-tag\">SYNCED</span></h5>\n" +
                 "                <p>Timetable &bull; Events &bull; Exams Active</p>\n" +
                 "              </div>\n" +
-                "              <!-- Next Schedule Slot -->\n" +
                 "              <div class=\"app-card-mock\">\n" +
                 "                <h5><span>⏰ Next Class</span> <span style=\"color: #818CF8; font-size: 10px;\">10:00 AM</span></h5>\n" +
                 "                <p>Computer Networks &bull; Room 302</p>\n" +
                 "              </div>\n" +
-                "              <!-- AI Insight Recommendation -->\n" +
                 "              <div class=\"app-card-mock\">\n" +
                 "                <h5><span>🤖 AI Study Gap</span> <span style=\"color: #10B981; font-size: 10px;\">Free Slot</span></h5>\n" +
                 "                <p>Revise Graph Algorithms (Exam in 4 days)</p>\n" +
                 "              </div>\n" +
-                "              <!-- Focus Stats -->\n" +
                 "              <div class=\"app-card-mock\">\n" +
                 "                <h5><span>🎯 Today's Target</span> <span style=\"color: #F43F5E; font-size: 10px;\">4.5 / 6h</span></h5>\n" +
-                "                <div style=\"width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 5px; overflow: hidden;\">\n" +
+                "                <div style=\"width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 4px; overflow: hidden;\">\n" +
                 "                  <div style=\"width: 75%; height: 100%; background: #6366F1;\"></div>\n" +
                 "                </div>\n" +
                 "              </div>\n" +
                 "            </div>\n" +
-                "            <!-- Mobile App Bottom Nav Mockup -->\n" +
                 "            <div class=\"screen-bottom-nav\">\n" +
                 "              <div class=\"nav-item-active\">🏠 Home</div>\n" +
                 "              <div>📖 Subjects</div>\n" +
@@ -829,7 +763,6 @@ public class DownloadController {
                 "            </div>\n" +
                 "          </div>\n" +
                 "        </div>\n" +
-                "        <!-- QR Code for Phone Scan -->\n" +
                 "        <div class=\"qr-card-desktop\">\n" +
                 "          <img src=\"https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://studymate-ai-uuvd.onrender.com/download/app.apk\" alt=\"QR code\" />\n" +
                 "          <div class=\"qr-card-info\">\n" +
@@ -876,10 +809,10 @@ public class DownloadController {
                 "    <div class=\"modal-content\">\n" +
                 "      <button class=\"modal-close\" onclick=\"closeInstallModal()\">&times;</button>\n" +
                 "      <div class=\"download-anim-icon\">\n" +
-                "        <svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7 10 12 15 17 10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>\n" +
+                "        <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7 10 12 15 17 10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>\n" +
                 "      </div>\n" +
-                "      <h3 style=\"font-size: 20px; font-weight: 800; margin-bottom: 4px;\">Starting Download...</h3>\n" +
-                "      <p style=\"color: var(--text-muted); font-size: 13px; margin-bottom: 12px;\">Your Android APK file is downloading now.</p>\n" +
+                "      <h3 style=\"font-size: 19px; font-weight: 800; margin-bottom: 4px;\">Starting Download...</h3>\n" +
+                "      <p style=\"color: #94A3B8; font-size: 13px; margin-bottom: 12px;\">Your Android APK file is downloading now.</p>\n" +
                 "      <div class=\"progress-bar-container\">\n" +
                 "        <div class=\"progress-bar-fill\" id=\"progressBar\"></div>\n" +
                 "      </div>\n" +
