@@ -3,9 +3,9 @@ FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
 # Copy gradle wrapper and configuration files
-COPY studymate_ai/backend_java/gradlew studymate_ai/backend_java/build.gradle studymate_ai/backend_java/settings.gradle ./
-COPY studymate_ai/backend_java/gradle ./gradle
-COPY studymate_ai/backend_java/src ./src
+COPY backend_java/gradlew backend_java/build.gradle backend_java/settings.gradle ./
+COPY backend_java/gradle ./gradle
+COPY backend_java/src ./src
 
 # Build executable jar
 RUN chmod +x gradlew && ./gradlew bootJar --no-daemon
