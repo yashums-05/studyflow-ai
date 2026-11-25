@@ -1,6 +1,6 @@
 class ApiConstants {
-  // Configured default backend URL (Host LAN IP / Cloud endpoint)
-  static const String defaultBaseUrl = "http://10.241.79.217:8000/api/v1";
+  // Configured default backend URL (Live Cloud Render Endpoint)
+  static const String defaultBaseUrl = "https://studymate-ai-uuvd.onrender.com/api/v1";
   
   // Endpoints
   static const String userProfile = "/users/profile";
