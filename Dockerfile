@@ -14,6 +14,7 @@ RUN chmod +x gradlew && ./gradlew bootJar --no-daemon
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
+COPY apk/StudyFlowAI.apk /app/StudyFlowAI.apk
 
 ENV PORT=8000
 EXPOSE 8000

@@ -18,7 +18,9 @@ public class HealthController {
                 "app", "StudyFlow AI Java Backend",
                 "status", "online",
                 "framework", "Spring Boot 3.2 (Java 17)",
-                "version", "1.0.0"
+                "version", "1.0.0",
+                "downloadApk", "https://studymate-ai-uuvd.onrender.com/download/app.apk",
+                "downloadPage", "https://studymate-ai-uuvd.onrender.com/download"
         );
     }
 
@@ -28,7 +30,8 @@ public class HealthController {
                 "status", "healthy",
                 "api", "v1",
                 "runtime", "Java 17 OpenJDK",
-                "geminiConfigured", geminiApiKey != null && !geminiApiKey.trim().isEmpty()
+                "geminiConfigured", geminiApiKey != null && !geminiApiKey.trim().isEmpty(),
+                "downloadApk", "https://studymate-ai-uuvd.onrender.com/download/app.apk"
         );
     }
 }

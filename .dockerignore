@@ -1,8 +1,8 @@
 .git
 .github
-studymate_ai/mobile
-studymate_ai/docs
-studymate_ai/firebase
-studymate_ai/*.md
-studymate_ai/backend_java/.gradle
-studymate_ai/backend_java/build
+mobile
+docs
+firebase
+*.md
+backend_java/.gradle
+backend_java/build
