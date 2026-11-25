@@ -26,4 +26,10 @@ class ApiConstants {
   static const String analyticsSubjects = "/analytics/subjects";
   static const String documentsUpload = "/documents/upload";
   static const String documents = "/documents";
+  
+  // Academic Schedule & Upload Hub Endpoints
+  static const String academicClassTimetable = "/academic/class-timetable";
+  static const String academicCalendarEvents = "/academic/calendar-events";
+  static const String academicSuggestions = "/academic/suggestions";
+  static const String academicUploadParse = "/academic/upload-and-parse";
 }

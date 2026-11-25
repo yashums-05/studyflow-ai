@@ -6,6 +6,9 @@ import '../../shared/models/subject_model.dart';
 import '../../shared/models/study_session_model.dart';
 import '../../shared/models/exam_model.dart';
 import '../../shared/models/analytics_model.dart';
+import '../../shared/models/class_slot_model.dart';
+import '../../shared/models/academic_event_model.dart';
+import '../../shared/models/schedule_suggestion_model.dart';
 import '../../shared/repositories/api_repository.dart';
 
 final apiRepositoryProvider = Provider<ApiRepository>((ref) {
@@ -261,3 +264,16 @@ class FocusTimerNotifier extends StateNotifier<FocusTimerState> {
     super.dispose();
   }
 }
+
+// 7. Academic Hub Providers
+final classTimetableProvider = FutureProvider<List<ClassSlotModel>>((ref) async {
+  return ref.watch(apiRepositoryProvider).getClassTimetable();
+});
+
+final calendarEventsProvider = FutureProvider<List<AcademicEventModel>>((ref) async {
+  return ref.watch(apiRepositoryProvider).getCalendarEvents();
+});
+
+final academicSuggestionsProvider = FutureProvider<List<ScheduleSuggestionModel>>((ref) async {
+  return ref.watch(apiRepositoryProvider).getAcademicSuggestions();
+});

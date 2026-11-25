@@ -16,6 +16,7 @@ import '../../features/ai_tutor/presentation/ai_tutor_chat_screen.dart';
 import '../../features/analytics/presentation/analytics_screen.dart';
 import '../../features/exams/presentation/exams_screen.dart';
 import '../../features/study_sessions/presentation/study_session_history_screen.dart';
+import '../../features/academic_hub/presentation/academic_hub_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
@@ -86,6 +87,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/session-history',
       builder: (context, state) => const StudySessionHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/academic-hub',
+      builder: (context, state) => const AcademicHubScreen(),
     ),
   ],
 );

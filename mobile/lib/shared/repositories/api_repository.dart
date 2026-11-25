@@ -7,6 +7,9 @@ import '../models/study_session_model.dart';
 import '../models/exam_model.dart';
 import '../models/analytics_model.dart';
 import '../models/quiz_model.dart';
+import '../models/class_slot_model.dart';
+import '../models/academic_event_model.dart';
+import '../models/schedule_suggestion_model.dart';
 
 class ApiRepository {
   final Dio _dio = ApiClient().dio;
@@ -164,5 +167,54 @@ class ApiRepository {
       'numQuestions': numQuestions,
     });
     return QuizResponseModel.fromJson(res.data);
+  }
+
+  // Academic Hub (Class Timetable, Calendar of Events, Suggestions, Uploads)
+  Future<List<ClassSlotModel>> getClassTimetable() async {
+    final res = await _dio.get(ApiConstants.academicClassTimetable);
+    return (res.data as List).map((e) => ClassSlotModel.fromJson(e)).toList();
+  }
+
+  Future<ClassSlotModel> addClassSlot(Map<String, dynamic> data) async {
+    final res = await _dio.post(ApiConstants.academicClassTimetable, data: data);
+    return ClassSlotModel.fromJson(res.data);
+  }
+
+  Future<void> deleteClassSlot(String id) async {
+    await _dio.delete("${ApiConstants.academicClassTimetable}/$id");
+  }
+
+  Future<List<AcademicEventModel>> getCalendarEvents() async {
+    final res = await _dio.get(ApiConstants.academicCalendarEvents);
+    return (res.data as List).map((e) => AcademicEventModel.fromJson(e)).toList();
+  }
+
+  Future<AcademicEventModel> addCalendarEvent(Map<String, dynamic> data) async {
+    final res = await _dio.post(ApiConstants.academicCalendarEvents, data: data);
+    return AcademicEventModel.fromJson(res.data);
+  }
+
+  Future<void> deleteCalendarEvent(String id) async {
+    await _dio.delete("${ApiConstants.academicCalendarEvents}/$id");
+  }
+
+  Future<List<ScheduleSuggestionModel>> getAcademicSuggestions() async {
+    final res = await _dio.get(ApiConstants.academicSuggestions);
+    return (res.data as List).map((e) => ScheduleSuggestionModel.fromJson(e)).toList();
+  }
+
+  Future<Map<String, dynamic>> uploadAndParseAcademicDoc({
+    required String type,
+    String? rawText,
+    String? filePath,
+  }) async {
+    final formData = FormData.fromMap({
+      'type': type,
+      if (rawText != null) 'text': rawText,
+      if (filePath != null)
+        'file': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+    });
+    final res = await _dio.post(ApiConstants.academicUploadParse, data: formData);
+    return res.data;
   }
 }

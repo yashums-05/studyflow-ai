@@ -145,6 +145,58 @@ class HomeDashboardScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
 
+                // 2.5 Academic Schedule & AI Suggestions Hero Banner
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => context.push('/academic-hub'),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7556D9), Color(0xFF9061F9)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 24),
+                          ),
+                          const SizedBox(width: 14),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Class Timetable & Events Hub',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  'Upload routine, exams & events for smart AI suggestions',
+                                  style: TextStyle(fontSize: 12, color: Colors.white70),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // 3. Quick Actions
                 const Text(
                   'Quick Actions',
@@ -155,6 +207,12 @@ class HomeDashboardScreen extends ConsumerWidget {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
+                      _buildQuickAction(
+                        icon: Icons.calendar_month_rounded,
+                        label: 'Academic Hub',
+                        color: const Color(0xFF7556D9),
+                        onTap: () => context.push('/academic-hub'),
+                      ),
                       _buildQuickAction(
                         icon: Icons.play_arrow_rounded,
                         label: 'Focus Timer',
