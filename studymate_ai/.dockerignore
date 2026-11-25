@@ -1,0 +1,8 @@
+.git
+.github
+mobile
+docs
+firebase
+*.md
+backend_java/.gradle
+backend_java/build
