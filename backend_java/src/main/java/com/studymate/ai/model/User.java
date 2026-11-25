@@ -6,12 +6,12 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
-    private String id = "dev_user_student_1";
-    private String email = "student@univ.edu";
-    private String fullName = "Alex Morgan";
-    private String collegeName = "MIT College of Engineering";
-    private String degree = "B.Tech Computer Science";
-    private String department = "Computer Science & Engineering";
+    private String id;
+    private String email;
+    private String fullName;
+    private String collegeName = "Engineering Institute";
+    private String degree = "B.Tech";
+    private String department = "Computer Science";
     private Integer semester = 6;
     private String academicYear = "2026-2027";
     private String preferredWakeUpTime = "06:30";

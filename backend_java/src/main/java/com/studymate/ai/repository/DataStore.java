@@ -197,8 +197,33 @@ public class DataStore {
         return users.computeIfAbsent(id, k -> {
             User u = new User();
             u.setId(k);
+            if ("dev_user_student_1".equals(k)) {
+                u.setEmail("student@univ.edu");
+                u.setFullName("Alex Morgan");
+                u.setCollegeName("MIT College of Engineering");
+            } else {
+                String clean = k.replace("dev_user_", "").replace("user_", "");
+                if (clean.contains("@")) {
+                    u.setEmail(clean);
+                    String name = clean.split("@")[0];
+                    u.setFullName(Character.toUpperCase(name.charAt(0)) + name.substring(1));
+                } else if (!clean.isEmpty()) {
+                    u.setFullName(Character.toUpperCase(clean.charAt(0)) + clean.substring(1));
+                    u.setEmail(clean + "@studyflow.ai");
+                } else {
+                    u.setFullName("New Student");
+                    u.setEmail("student@studyflow.ai");
+                }
+            }
             return u;
         });
+    }
+
+    public Optional<User> findUserByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) return Optional.empty();
+        return users.values().stream()
+                .filter(u -> email.equalsIgnoreCase(u.getEmail()))
+                .findFirst();
     }
 
     public User saveUser(User user) {
@@ -208,9 +233,91 @@ public class DataStore {
 
     // Subject CRUD
     public List<Subject> getAllSubjects(String userId) {
-        return subjects.values().stream()
-                .filter(s -> userId.equals(s.getUserId()))
+        List<Subject> list = subjects.values().stream()
+                .filter(s -> userId != null && userId.equals(s.getUserId()))
                 .collect(Collectors.toList());
+
+        if (list.isEmpty() && userId != null && !"dev_user_student_1".equals(userId)) {
+            initializeStarterSubjectsForUser(userId);
+            list = subjects.values().stream()
+                    .filter(s -> userId.equals(s.getUserId()))
+                    .collect(Collectors.toList());
+        }
+        return list;
+    }
+
+    private void initializeStarterSubjectsForUser(String userId) {
+        Subject s1 = new Subject();
+        s1.setId("sub_" + UUID.randomUUID().toString().substring(0, 8));
+        s1.setUserId(userId);
+        s1.setName("Computer Networks");
+        s1.setCode("CS601");
+        s1.setSemester(6);
+        s1.setDifficultyLevel(4);
+        s1.setColorHex("#7556D9");
+        s1.setEstimatedStudyHours(45.0);
+        s1.setExaminationDate(LocalDate.now().plusDays(14).toString());
+        s1.setTotalUnits(2);
+        s1.setCompletionPercentage(20.0);
+        subjects.put(s1.getId(), s1);
+
+        Unit u1 = new Unit();
+        u1.setId("unit_" + UUID.randomUUID().toString().substring(0, 8));
+        u1.setSubjectId(s1.getId());
+        u1.setUnitNumber(1);
+        u1.setTitle("Physical & Data Link Layers");
+        units.put(u1.getId(), u1);
+
+        Topic t1 = new Topic();
+        t1.setId("top_" + UUID.randomUUID().toString().substring(0, 8));
+        t1.setSubjectId(s1.getId());
+        t1.setUnitId(u1.getId());
+        t1.setName("Framing and Error Detection (CRC)");
+        t1.setDifficultyLevel(3);
+        t1.setCompletionStatus("in_progress");
+        t1.setUnderstandingRating(4);
+        topics.put(t1.getId(), t1);
+
+        Subject s2 = new Subject();
+        s2.setId("sub_" + UUID.randomUUID().toString().substring(0, 8));
+        s2.setUserId(userId);
+        s2.setName("Operating Systems");
+        s2.setCode("CS602");
+        s2.setSemester(6);
+        s2.setDifficultyLevel(4);
+        s2.setColorHex("#22C55E");
+        s2.setEstimatedStudyHours(50.0);
+        s2.setExaminationDate(LocalDate.now().plusDays(10).toString());
+        s2.setTotalUnits(2);
+        s2.setCompletionPercentage(35.0);
+        subjects.put(s2.getId(), s2);
+
+        Unit u2 = new Unit();
+        u2.setId("unit_" + UUID.randomUUID().toString().substring(0, 8));
+        u2.setSubjectId(s2.getId());
+        u2.setUnitNumber(1);
+        u2.setTitle("Process & Memory Management");
+        units.put(u2.getId(), u2);
+
+        Topic t2 = new Topic();
+        t2.setId("top_" + UUID.randomUUID().toString().substring(0, 8));
+        t2.setSubjectId(s2.getId());
+        t2.setUnitId(u2.getId());
+        t2.setName("Deadlock Avoidance (Banker's Algorithm)");
+        t2.setDifficultyLevel(5);
+        t2.setCompletionStatus("needs_revision");
+        t2.setUnderstandingRating(2);
+        topics.put(t2.getId(), t2);
+
+        // Starter exam for this user
+        Exam ex = new Exam();
+        ex.setUserId(userId);
+        ex.setSubjectId(s2.getId());
+        ex.setSubjectName("Operating Systems");
+        ex.setExamDate(LocalDate.now().plusDays(10).toString());
+        ex.setVenue("Hall 3");
+        ex.setTargetScore(90);
+        exams.put(ex.getId(), ex);
     }
 
     public Optional<Subject> getSubject(String id) {
