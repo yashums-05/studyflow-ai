@@ -97,7 +97,33 @@ public class TimetableService {
 
         for (int d = 0; d < daysCount; d++) {
             LocalDate currentDate = startDate.plusDays(d);
-            LocalTime currentSlotTime = dayStartTime;
+
+            // Check if currentDate is marked as holiday
+            boolean isHoliday = false;
+            for (AcademicEvent ae : dataStore.getAllAcademicEvents(userId)) {
+                if (currentDate.toString().equals(ae.getEventDate())) {
+                    if (ae.isHoliday() || "holiday".equalsIgnoreCase(ae.getEventType())) {
+                        isHoliday = true;
+                        break;
+                    }
+                }
+            }
+
+            // Check class timetable slots for this day
+            String dayOfWeek = currentDate.getDayOfWeek().name();
+            List<ClassSlot> dayClasses = isHoliday ? Collections.emptyList() : dataStore.getClassSlotsByDay(userId, dayOfWeek);
+
+            // Smart schedule timing:
+            // On days with college classes, study sessions begin at 17:00 (evening) to avoid class conflicts.
+            // On holidays or weekends, study sessions can begin in the morning (09:30).
+            LocalTime currentSlotTime;
+            if (isHoliday || currentDate.getDayOfWeek() == java.time.DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == java.time.DayOfWeek.SUNDAY) {
+                currentSlotTime = LocalTime.of(9, 30);
+            } else if (!dayClasses.isEmpty()) {
+                currentSlotTime = LocalTime.of(17, 0); // Evening self-study slot avoiding class hours
+            } else {
+                currentSlotTime = dayStartTime;
+            }
 
             for (int s = 0; s < maxSessionsPerDay; s++) {
                 if (scoredTopics.isEmpty()) break;

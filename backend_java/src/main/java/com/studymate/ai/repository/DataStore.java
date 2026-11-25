@@ -16,6 +16,8 @@ public class DataStore {
     private final Map<String, Topic> topics = new ConcurrentHashMap<>();
     private final Map<String, StudySession> studySessions = new ConcurrentHashMap<>();
     private final Map<String, Exam> exams = new ConcurrentHashMap<>();
+    private final Map<String, ClassSlot> classSlots = new ConcurrentHashMap<>();
+    private final Map<String, AcademicEvent> academicEvents = new ConcurrentHashMap<>();
 
     public DataStore() {
         seedInitialData();
@@ -153,6 +155,41 @@ public class DataStore {
         sess1.setUnderstandingRating(4);
         sess1.setNotes("Understood CRC checksum computation using polynomial division.");
         studySessions.put(sess1.getId(), sess1);
+
+        // Seed Class Timetable Slots (Typical Engineering Schedule)
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        for (String day : days) {
+            ClassSlot cs1 = new ClassSlot(day, "09:00", "10:00", "Operating Systems", "Lecture");
+            cs1.setRoom("LH-204");
+            classSlots.put(cs1.getId(), cs1);
+
+            ClassSlot cs2 = new ClassSlot(day, "10:00", "11:00", "Computer Networks", "Lecture");
+            cs2.setRoom("LH-205");
+            classSlots.put(cs2.getId(), cs2);
+
+            if ("Wednesday".equals(day) || "Friday".equals(day)) {
+                ClassSlot csLab = new ClassSlot(day, "14:00", "16:00", "Systems Programming Lab", "Lab");
+                csLab.setRoom("Lab-B (Comp Dept)");
+                classSlots.put(csLab.getId(), csLab);
+            }
+        }
+
+        // Seed Academic Calendar Events
+        AcademicEvent ae1 = new AcademicEvent("Internal Assessment (IA-1)", LocalDate.now().plusDays(5).toString(), "internal_assessment", false);
+        ae1.setDescription("Syllabus: Units 1 & 2 for Operating Systems and Networks.");
+        academicEvents.put(ae1.getId(), ae1);
+
+        AcademicEvent ae2 = new AcademicEvent("College Founders Day (Holiday)", LocalDate.now().plusDays(8).toString(), "holiday", true);
+        ae2.setDescription("Full-day campus holiday. All regular classes suspended.");
+        academicEvents.put(ae2.getId(), ae2);
+
+        AcademicEvent ae3 = new AcademicEvent("Mini Project Architecture Submission", LocalDate.now().plusDays(12).toString(), "deadline", false);
+        ae3.setDescription("Submit GitHub repository link and architecture documentation.");
+        academicEvents.put(ae3.getId(), ae3);
+
+        AcademicEvent ae4 = new AcademicEvent("Semester Final Examinations", LocalDate.now().plusDays(20).toString(), "semester_exam", false);
+        ae4.setDescription("University board finals across all 6 registered subjects.");
+        academicEvents.put(ae4.getId(), ae4);
     }
 
     // User CRUD
@@ -329,5 +366,69 @@ public class DataStore {
 
     public boolean deleteExam(String id) {
         return exams.remove(id) != null;
+    }
+
+    // ClassSlot CRUD
+    public List<ClassSlot> getAllClassSlots(String userId) {
+        return classSlots.values().stream()
+                .filter(cs -> userId.equals(cs.getUserId()))
+                .sorted(Comparator.comparing(ClassSlot::getDayOfWeek)
+                        .thenComparing(ClassSlot::getStartTime))
+                .collect(Collectors.toList());
+    }
+
+    public List<ClassSlot> getClassSlotsByDay(String userId, String dayOfWeek) {
+        return classSlots.values().stream()
+                .filter(cs -> userId.equals(cs.getUserId()) && dayOfWeek.equalsIgnoreCase(cs.getDayOfWeek()))
+                .sorted(Comparator.comparing(ClassSlot::getStartTime))
+                .collect(Collectors.toList());
+    }
+
+    public ClassSlot saveClassSlot(ClassSlot slot) {
+        if (slot.getId() == null || slot.getId().isEmpty()) {
+            slot.setId(UUID.randomUUID().toString());
+        }
+        classSlots.put(slot.getId(), slot);
+        return slot;
+    }
+
+    public void saveClassSlots(List<ClassSlot> slots) {
+        for (ClassSlot s : slots) {
+            saveClassSlot(s);
+        }
+    }
+
+    public void clearClassSlots(String userId) {
+        classSlots.values().removeIf(cs -> userId.equals(cs.getUserId()));
+    }
+
+    public boolean deleteClassSlot(String id) {
+        return classSlots.remove(id) != null;
+    }
+
+    // AcademicEvent CRUD
+    public List<AcademicEvent> getAllAcademicEvents(String userId) {
+        return academicEvents.values().stream()
+                .filter(ae -> userId.equals(ae.getUserId()))
+                .sorted(Comparator.comparing(AcademicEvent::getEventDate))
+                .collect(Collectors.toList());
+    }
+
+    public AcademicEvent saveAcademicEvent(AcademicEvent event) {
+        if (event.getId() == null || event.getId().isEmpty()) {
+            event.setId(UUID.randomUUID().toString());
+        }
+        academicEvents.put(event.getId(), event);
+        return event;
+    }
+
+    public void saveAcademicEvents(List<AcademicEvent> events) {
+        for (AcademicEvent ae : events) {
+            saveAcademicEvent(ae);
+        }
+    }
+
+    public boolean deleteAcademicEvent(String id) {
+        return academicEvents.remove(id) != null;
     }
 }
