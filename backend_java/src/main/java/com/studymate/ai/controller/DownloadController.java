@@ -16,10 +16,12 @@ import java.util.Map;
 public class DownloadController {
 
     private final String[] APK_PATHS = {
+            "D:\\AI app\\mobile\\build\\app\\outputs\\flutter-apk\\StudyFlowAI.apk",
+            "D:\\AI app\\mobile\\build\\app\\outputs\\flutter-apk\\app-debug.apk",
             "D:\\AI app\\studymate_ai\\mobile\\build\\app\\outputs\\flutter-apk\\StudyFlowAI.apk",
             "D:\\AI app\\studymate_ai\\mobile\\build\\app\\outputs\\flutter-apk\\app-debug.apk",
-            "D:\\AI app\\studymate_ai\\mobile\\android\\app\\build\\outputs\\flutter-apk\\app-debug.apk",
-            "D:\\AI app\\studymate_ai\\mobile\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk"
+            "D:\\AI app\\mobile\\android\\app\\build\\outputs\\flutter-apk\\app-debug.apk",
+            "D:\\AI app\\mobile\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk"
     };
 
     @GetMapping("/download/app.apk")

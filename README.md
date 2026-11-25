@@ -80,7 +80,6 @@ Once your Render backend is live:
 
 ## 📁 Repository Structure
 ```
-studymate_ai/
 ├── mobile/                  # Flutter Android application
 │   ├── lib/
 │   │   ├── core/           # Design system, theme, routing, API constants
@@ -91,8 +90,8 @@ studymate_ai/
 ├── backend_java/            # Java 17 Spring Boot 3.2.4 Backend
 │   ├── src/main/java/      # Controllers, Services, Models, DTOs, Repositories
 │   ├── src/main/resources/ # application.yml configuration
-│   ├── Dockerfile          # Multi-stage production container build
 │   └── build.gradle        # Gradle dependencies and bootJar config
+├── Dockerfile               # Root multi-stage container build for Render
 ├── render.yaml              # Render Blueprint deployment definition
 ├── docs/                    # Architecture, API docs, database schema
 └── README.md

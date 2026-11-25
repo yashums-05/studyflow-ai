@@ -1,5 +1,5 @@
 # ============================================================
-# StudyMate AI - Flutter Setup & Launch Script
+# StudyFlow AI - Flutter Setup & Launch Script
 # Run this script AFTER installing Flutter SDK
 # ============================================================
 
@@ -11,9 +11,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = "D:\AI app\studymate_ai"
+$ProjectRoot = "D:\AI app"
 $MobileDir   = "$ProjectRoot\mobile"
-$BackendDir  = "$ProjectRoot\backend"
+$BackendDir  = "$ProjectRoot\backend_java"
 
 function Write-Header($msg) {
     Write-Host ""
