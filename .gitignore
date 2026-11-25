@@ -1,5 +1,6 @@
 # Android & Gradle
 .gradle/
+**/.cxx/
 **/build/
 !**/build/app/outputs/flutter-apk/*.apk
 *.iml

@@ -13,7 +13,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController(text: 'student@studymate.ai');
+  final _emailCtrl = TextEditingController(text: 'student@studyflow.ai');
   final _passCtrl = TextEditingController(text: 'password123');
   bool _obscurePass = true;
   bool _isLoading = false;

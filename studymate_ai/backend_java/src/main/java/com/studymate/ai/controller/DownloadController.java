@@ -28,7 +28,7 @@ public class DownloadController {
             if (f.exists() && f.length() > 0) {
                 Resource resource = new FileSystemResource(f);
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"StudyMateAI.apk\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"StudyFlowAI.apk\"")
                         .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
                         .contentLength(f.length())
                         .body(resource);

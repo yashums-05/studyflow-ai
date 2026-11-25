@@ -12,18 +12,18 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: StudyMateApp(),
+      child: StudyFlowApp(),
     ),
   );
 }
 
-class StudyMateApp extends StatelessWidget {
-  const StudyMateApp({super.key});
+class StudyFlowApp extends StatelessWidget {
+  const StudyFlowApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'StudyMate AI',
+      title: 'StudyFlow AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

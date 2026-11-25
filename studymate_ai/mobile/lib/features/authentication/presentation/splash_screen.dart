@@ -80,15 +80,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.auto_stories_rounded,
-                  size: 50,
-                  color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/icons/app_logo.png',
+                    width: 96,
+                    height: 96,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.psychology_alt_rounded,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
               const Text(
-                'StudyMate AI',
+                'StudyFlow AI',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

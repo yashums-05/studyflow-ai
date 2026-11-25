@@ -32,8 +32,8 @@ class LocalNotificationService {
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
-      'studymate_alerts',
-      'StudyMate Reminders',
+      'studyflow_alerts',
+      'StudyFlow Reminders',
       channelDescription: 'Alerts for upcoming study sessions, exams, and streak reminders',
       importance: Importance.max,
       priority: Priority.high,

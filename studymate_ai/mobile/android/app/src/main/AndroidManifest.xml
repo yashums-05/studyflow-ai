@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
-        android:label="StudyMate AI"
+        android:label="StudyFlow AI"
         android:name="android.app.Application"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

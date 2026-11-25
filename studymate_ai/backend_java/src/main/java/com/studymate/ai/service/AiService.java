@@ -44,7 +44,7 @@ public class AiService {
         // Try Gemini API if key is present
         if (geminiApiKey != null && !geminiApiKey.trim().isEmpty()) {
             try {
-                String prompt = "You are StudyMate AI, an expert, encouraging academic tutor for engineering and university students.\n"
+                String prompt = "You are StudyFlow AI, an expert, encouraging academic tutor for engineering and university students.\n"
                         + "Subject Context: " + (request.getSubjectContext() != null ? request.getSubjectContext() : "General Studies") + "\n"
                         + "Student Question: " + userMessage + "\n\n"
                         + "Provide a clear, structured explanation with key concepts and an example:";

@@ -27,7 +27,7 @@ class _AiTutorChatScreenState extends ConsumerState<AiTutorChatScreen> {
   final List<ChatMessageItem> _messages = [
     ChatMessageItem(
       sender: 'ai',
-      text: "Hello! I am **StudyMate AI**, your intelligent academic tutor. "
+      text: "Hello! I am **StudyFlow AI**, your intelligent academic tutor. "
           "Ask me to explain any concept, solve a numerical step-by-step, generate practice MCQs, or summarize your course syllabus.",
       timestamp: DateTime.now(),
     ),
@@ -121,7 +121,7 @@ class _AiTutorChatScreenState extends ConsumerState<AiTutorChatScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('StudyMate AI Tutor', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                Text('StudyFlow AI Tutor', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                 Text('Online • Powered by Gemini', style: TextStyle(fontSize: 11, color: AppColors.success)),
               ],
             ),
@@ -197,7 +197,7 @@ class _AiTutorChatScreenState extends ConsumerState<AiTutorChatScreen> {
                 children: [
                   SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                   SizedBox(width: 10),
-                  Text('StudyMate is formulating an explanation...', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                  Text('StudyFlow is formulating an explanation...', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
                 ],
               ),
             ),

@@ -65,7 +65,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                u?.fullName ?? 'StudyMate Student',
+                                u?.fullName ?? 'StudyFlow Student',
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                               ),
                               const SizedBox(height: 4),
@@ -246,7 +246,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       if (mounted) context.go('/welcome');
                     },
                     icon: const Icon(Icons.logout, color: AppColors.error),
-                    label: const Text('Log Out of StudyMate', style: TextStyle(color: AppColors.error)),
+                    label: const Text('Log Out of StudyFlow', style: TextStyle(color: AppColors.error)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AppColors.error),
                     ),

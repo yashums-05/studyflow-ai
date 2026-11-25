@@ -168,7 +168,7 @@ Demand Paging, Page Replacement Algorithms (FIFO, LRU, Optimal), Thrashing, Work
             ),
             const SizedBox(height: 6),
             const Text(
-              'StudyMate parses the outline using AI, extracts unit hierarchies and topics, and asks for your review before saving.',
+              'StudyFlow parses the outline using AI, extracts unit hierarchies and topics, and asks for your review before saving.',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),

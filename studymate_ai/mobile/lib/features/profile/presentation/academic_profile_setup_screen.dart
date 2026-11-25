@@ -48,7 +48,7 @@ class _AcademicProfileSetupScreenState extends State<AcademicProfileSetupScreen>
               ),
               const SizedBox(height: 6),
               const Text(
-                'This helps StudyMate calibrate topic depths and semester requirements.',
+                'This helps StudyFlow calibrate topic depths and semester requirements.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               const SizedBox(height: 24),

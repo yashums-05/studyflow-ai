@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Join StudyMate AI to accelerate your academic success.',
+                  'Join StudyFlow AI to accelerate your academic success.',
                   style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
                 ),
                 const SizedBox(height: 28),

@@ -15,7 +15,7 @@ public class HealthController {
     @GetMapping("/")
     public Map<String, Object> root() {
         return Map.of(
-                "app", "StudyMate AI Java Backend",
+                "app", "StudyFlow AI Java Backend",
                 "status", "online",
                 "framework", "Spring Boot 3.2 (Java 17)",
                 "version", "1.0.0"
