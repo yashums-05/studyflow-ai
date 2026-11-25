@@ -2,13 +2,15 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 
+ENV GRADLE_OPTS="-Dorg.gradle.jvmargs=\"-Xmx384m -XX:MaxMetaspaceSize=192m -XX:+UseSerialGC\""
+
 # Copy gradle wrapper and configuration files
-COPY backend_java/gradlew backend_java/build.gradle backend_java/settings.gradle ./
+COPY backend_java/gradlew backend_java/build.gradle backend_java/settings.gradle backend_java/gradle.properties ./
 COPY backend_java/gradle ./gradle
 COPY backend_java/src ./src
 
-# Build executable jar
-RUN chmod +x gradlew && ./gradlew bootJar --no-daemon
+# Build executable jar without running tests
+RUN chmod +x gradlew && ./gradlew bootJar -x test --no-daemon --stacktrace
 
 # Lightweight JRE runtime image
 FROM eclipse-temurin:17-jre-jammy
@@ -18,4 +20,4 @@ COPY apk/StudyFlowAI.apk /app/StudyFlowAI.apk
 
 ENV PORT=8000
 EXPOSE 8000
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx384m", "-jar", "app.jar"]
