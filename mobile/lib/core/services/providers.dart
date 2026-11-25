@@ -30,9 +30,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      if (token == null) {
-        // Set default dev token for initial demonstration
-        await prefs.setString('auth_token', 'dev_user_student_1');
+      if (token == null || token.trim().isEmpty) {
+        state = const AsyncValue.data(null);
+        return;
       }
       final user = await _repo.getUserProfile();
       state = AsyncValue.data(user);
@@ -44,12 +44,61 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> login(String email, String password) async {
     state = const AsyncValue.loading();
     try {
+      final res = await _repo.login(email.trim(), password);
+      final token = res['token']?.toString() ?? 'user_${email.split('@').first}';
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', 'dev_user_${email.split('@').first}');
-      final user = await _repo.getUserProfile();
+      await prefs.setString('auth_token', token);
+
+      final userData = res['user'];
+      UserModel user;
+      if (userData is Map<String, dynamic>) {
+        user = UserModel.fromJson(userData);
+      } else {
+        user = await _repo.getUserProfile();
+      }
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> register({
+    required String email,
+    required String password,
+    required String fullName,
+    String? college,
+    String? degree,
+    String? department,
+    int? semester,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      final res = await _repo.register({
+        'email': email.trim(),
+        'password': password,
+        'fullName': fullName.trim(),
+        if (college != null) 'collegeName': college.trim(),
+        if (degree != null) 'degree': degree.trim(),
+        if (department != null) 'department': department.trim(),
+        if (semester != null) 'semester': semester,
+      });
+
+      final token = res['token']?.toString() ?? 'user_${email.split('@').first}';
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('auth_token', token);
+
+      final userData = res['user'];
+      UserModel user;
+      if (userData is Map<String, dynamic>) {
+        user = UserModel.fromJson(userData);
+      } else {
+        user = await _repo.getUserProfile();
+      }
+      state = AsyncValue.data(user);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
     }
   }
 

@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
             context.go('/welcome');
           }
         },
-        loading: () => context.go('/home'),
+        loading: () => context.go('/welcome'),
         error: (_, __) => context.go('/welcome'),
       );
     });

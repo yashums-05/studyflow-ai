@@ -29,8 +29,10 @@ class ApiClient {
           if (customUrl != null && customUrl.trim().isNotEmpty) {
             options.baseUrl = customUrl.trim();
           }
-          final token = prefs.getString('auth_token') ?? 'dev_user_student_1';
-          options.headers['Authorization'] = 'Bearer $token';
+          final token = prefs.getString('auth_token');
+          if (token != null && token.trim().isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
           return handler.next(options);
         },
         onError: (DioException e, handler) {

@@ -14,6 +14,20 @@ import '../models/schedule_suggestion_model.dart';
 class ApiRepository {
   final Dio _dio = ApiClient().dio;
 
+  // Auth
+  Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
+    final res = await _dio.post(ApiConstants.authRegister, data: data);
+    return res.data;
+  }
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final res = await _dio.post(ApiConstants.authLogin, data: {
+      'email': email,
+      'password': password,
+    });
+    return res.data;
+  }
+
   // User Profile
   Future<UserModel> getUserProfile() async {
     final res = await _dio.get(ApiConstants.userProfile);

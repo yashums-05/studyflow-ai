@@ -1,26 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/providers.dart';
 
-class AcademicProfileSetupScreen extends StatefulWidget {
+class AcademicProfileSetupScreen extends ConsumerStatefulWidget {
   const AcademicProfileSetupScreen({super.key});
 
   @override
-  State<AcademicProfileSetupScreen> createState() => _AcademicProfileSetupScreenState();
+  ConsumerState<AcademicProfileSetupScreen> createState() => _AcademicProfileSetupScreenState();
 }
 
-class _AcademicProfileSetupScreenState extends State<AcademicProfileSetupScreen> {
-  final _collegeCtrl = TextEditingController(text: 'University Institute of Technology');
-  final _departmentCtrl = TextEditingController(text: 'Computer Science & Engineering');
+class _AcademicProfileSetupScreenState extends ConsumerState<AcademicProfileSetupScreen> {
+  final _collegeCtrl = TextEditingController();
+  final _departmentCtrl = TextEditingController();
   String _selectedDegree = 'B.Tech';
   int _selectedSemester = 6;
-  String _academicYear = '2024-2025';
+  String _academicYear = '2026-2027';
+  bool _isSaving = false;
 
   @override
   void dispose() {
     _collegeCtrl.dispose();
     _departmentCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleSaveAndNext() async {
+    setState(() => _isSaving = true);
+    try {
+      final repo = ref.read(apiRepositoryProvider);
+      await repo.updateUserProfile({
+        'collegeName': _collegeCtrl.text.trim().isNotEmpty ? _collegeCtrl.text.trim() : 'Engineering Institute',
+        'department': _departmentCtrl.text.trim().isNotEmpty ? _departmentCtrl.text.trim() : 'Computer Science',
+        'degree': _selectedDegree,
+        'semester': _selectedSemester,
+        'academicYear': _academicYear,
+      });
+      ref.invalidate(authProvider);
+    } catch (_) {}
+    if (mounted) {
+      setState(() => _isSaving = false);
+      context.push('/onboarding/preferences');
+    }
   }
 
   @override
@@ -109,10 +131,10 @@ class _AcademicProfileSetupScreenState extends State<AcademicProfileSetupScreen>
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    context.push('/onboarding/preferences');
-                  },
-                  child: const Text('Next: Study Preferences →'),
+                  onPressed: _isSaving ? null : _handleSaveAndNext,
+                  child: _isSaving
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('Next: Study Preferences →'),
                 ),
               ),
             ],
