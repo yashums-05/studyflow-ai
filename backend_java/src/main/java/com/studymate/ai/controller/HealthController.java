@@ -1,6 +1,7 @@
 package com.studymate.ai.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,15 +13,21 @@ public class HealthController {
     @Value("${app.gemini.api-key:}")
     private String geminiApiKey;
 
-    @GetMapping("/")
-    public Map<String, Object> root() {
+    @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
+    public String rootHtml() {
+        return DownloadController.getPortalHtml();
+    }
+
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> rootJson() {
         return Map.of(
                 "app", "StudyFlow AI Java Backend",
                 "status", "online",
                 "framework", "Spring Boot 3.2 (Java 17)",
                 "version", "1.0.0",
                 "downloadApk", "https://studymate-ai-uuvd.onrender.com/download/app.apk",
-                "downloadPage", "https://studymate-ai-uuvd.onrender.com/download"
+                "downloadPage", "https://studymate-ai-uuvd.onrender.com/download",
+                "installPortal", "https://studymate-ai-uuvd.onrender.com/install"
         );
     }
 
