@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: studyflow-ai-backend
+    name: studyflow-ai
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .

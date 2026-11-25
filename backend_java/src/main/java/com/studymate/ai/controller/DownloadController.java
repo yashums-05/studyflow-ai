@@ -764,7 +764,7 @@ public class DownloadController {
                 "          </div>\n" +
                 "        </div>\n" +
                 "        <div class=\"qr-card-desktop\">\n" +
-                "          <img src=\"https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://studymate-ai-uuvd.onrender.com/download/app.apk\" alt=\"QR code\" />\n" +
+                "          <img id=\"qrCodeImg\" src=\"https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://studymate-ai-uuvd.onrender.com/download/app.apk\" alt=\"QR code\" />\n" +
                 "          <div class=\"qr-card-info\">\n" +
                 "            <h6>Scan on Phone</h6>\n" +
                 "            <p>Point phone camera to download directly to your mobile device.</p>\n" +
@@ -883,6 +883,10 @@ public class DownloadController {
                 "    \n" +
                 "    // If URL has ?auto=true or ?install=true, auto-trigger\n" +
                 "    window.addEventListener('DOMContentLoaded', () => {\n" +
+                "      const qr = document.getElementById('qrCodeImg');\n" +
+                "      if (qr) {\n" +
+                "        qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(window.location.origin + '/download/app.apk');\n" +
+                "      }\n" +
                 "      const urlParams = new URLSearchParams(window.location.search);\n" +
                 "      if (urlParams.get('auto') === 'true' || urlParams.get('install') === 'true') {\n" +
                 "        startInstallation();\n" +
