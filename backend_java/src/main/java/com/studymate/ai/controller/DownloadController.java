@@ -1573,8 +1573,7 @@ public class DownloadController {
           </div>
           <div class="footer-links">
             <a href="/download/app.apk" class="footer-link">Download APK</a>
-            <a href="/health" class="footer-link">API Health</a>
-            <a href="https://github.com/yashums-05/studyflow-ai" target="_blank" rel="noopener" class="footer-link">GitHub Repository</a>
+            <a href="/health" class="footer-link">System Health</a>
           </div>
         </div>
       </div>
