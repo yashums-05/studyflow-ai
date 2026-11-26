@@ -268,7 +268,12 @@ class _AcademicHubScreenState extends ConsumerState<AcademicHubScreen> with Sing
               children: [
                 TextButton.icon(
                   onPressed: () {
-                    context.go(s.actionableRoute);
+                    final route = s.actionableRoute.trim();
+                    if (route.isNotEmpty && route.startsWith('/')) {
+                      context.go(route);
+                    } else {
+                      context.go('/timetable');
+                    }
                   },
                   icon: const Icon(Icons.arrow_forward_rounded, size: 16),
                   label: const Text('Take Action', style: TextStyle(fontWeight: FontWeight.bold)),
