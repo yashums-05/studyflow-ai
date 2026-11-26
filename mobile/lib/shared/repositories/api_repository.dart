@@ -28,6 +28,12 @@ class ApiRepository {
     return res.data;
   }
 
+  Future<void> logout() async {
+    try {
+      await _dio.post(ApiConstants.authLogout);
+    } catch (_) {}
+  }
+
   // User Profile
   Future<UserModel> getUserProfile() async {
     final res = await _dio.get(ApiConstants.userProfile);

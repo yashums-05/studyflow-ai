@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../shared/models/user_model.dart';
@@ -30,14 +31,56 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      if (token == null || token.trim().isEmpty) {
+      final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+      final cachedJson = prefs.getString('user_profile_json');
+
+      UserModel? cachedUser;
+      if (cachedJson != null && cachedJson.trim().isNotEmpty) {
+        try {
+          cachedUser = UserModel.fromJson(jsonDecode(cachedJson));
+        } catch (_) {}
+      }
+
+      // If user never logged in or explicitly logged out
+      if ((token == null || token.trim().isEmpty) && !isLoggedIn && cachedUser == null) {
         state = const AsyncValue.data(null);
         return;
       }
-      final user = await _repo.getUserProfile();
-      state = AsyncValue.data(user);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+
+      // Instantly supply cached user so the app is immediately authenticated and profile displays instantly
+      if (cachedUser != null) {
+        state = AsyncValue.data(cachedUser);
+      } else if (token != null && token.isNotEmpty) {
+        final cleanName = token.replaceFirst('user_', '');
+        final fallback = UserModel(
+          uid: token,
+          fullName: cleanName.isNotEmpty ? (cleanName[0].toUpperCase() + cleanName.substring(1)) : 'Student',
+          email: prefs.getString('user_email') ?? '$cleanName@studyflow.ai',
+          college: 'Engineering Institute',
+          degree: 'B.Tech',
+          department: 'Computer Science',
+          semester: 6,
+          academicYear: '2026-2027',
+          preferences: StudyPreferences(),
+        );
+        state = AsyncValue.data(fallback);
+      }
+
+      // Silently refresh profile in background from server
+      try {
+        final serverUser = await _repo.getUserProfile().timeout(const Duration(seconds: 8));
+        await prefs.setString('user_profile_json', jsonEncode(serverUser.toJson()));
+        await prefs.setBool('is_logged_in', true);
+        state = AsyncValue.data(serverUser);
+      } catch (netErr) {
+        // Network timeout / offline / backend spinup - DO NOT kick user out!
+      }
+    } catch (e) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      if (token == null || token.isEmpty) {
+        state = const AsyncValue.data(null);
+      }
     }
   }
 
@@ -48,6 +91,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       final token = res['token']?.toString() ?? 'user_${email.split('@').first}';
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', token);
+      await prefs.setString('user_email', email.trim().toLowerCase());
+      await prefs.setBool('is_logged_in', true);
 
       final userData = res['user'];
       UserModel user;
@@ -56,6 +101,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       } else {
         user = await _repo.getUserProfile();
       }
+
+      // Persist full user model in local storage
+      await prefs.setString('user_profile_json', jsonEncode(user.toJson()));
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -75,7 +123,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     state = const AsyncValue.loading();
     try {
       final res = await _repo.register({
-        'email': email.trim(),
+        'email': email.trim().toLowerCase(),
         'password': password,
         'fullName': fullName.trim(),
         if (college != null) 'collegeName': college.trim(),
@@ -87,6 +135,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       final token = res['token']?.toString() ?? 'user_${email.split('@').first}';
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', token);
+      await prefs.setString('user_email', email.trim().toLowerCase());
+      await prefs.setBool('is_logged_in', true);
 
       final userData = res['user'];
       UserModel user;
@@ -95,6 +145,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       } else {
         user = await _repo.getUserProfile();
       }
+
+      await prefs.setString('user_profile_json', jsonEncode(user.toJson()));
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -102,9 +154,42 @@ class AuthNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  Future<UserModel> updateProfile(Map<String, dynamic> data) async {
+    try {
+      final updated = await _repo.updateUserProfile(data);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_profile_json', jsonEncode(updated.toJson()));
+      state = AsyncValue.data(updated);
+      return updated;
+    } catch (e) {
+      final current = state.value;
+      if (current != null) {
+        final map = current.toJson();
+        data.forEach((key, value) {
+          if (value is Map && map[key] is Map) {
+            (map[key] as Map).addAll(value);
+          } else {
+            map[key] = value;
+          }
+        });
+        final localUpdated = UserModel.fromJson(map);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_profile_json', jsonEncode(localUpdated.toJson()));
+        state = AsyncValue.data(localUpdated);
+        return localUpdated;
+      }
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
+    try {
+      await _repo.logout();
+    } catch (_) {}
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
+    await prefs.remove('user_profile_json');
+    await prefs.setBool('is_logged_in', false);
     state = const AsyncValue.data(null);
   }
 }

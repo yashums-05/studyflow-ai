@@ -21,3 +21,6 @@ venv/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# App runtime data
+data/

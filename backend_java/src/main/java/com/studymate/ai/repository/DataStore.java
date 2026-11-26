@@ -19,11 +19,76 @@ public class DataStore {
     private final Map<String, ClassSlot> classSlots = new ConcurrentHashMap<>();
     private final Map<String, AcademicEvent> academicEvents = new ConcurrentHashMap<>();
 
+    private static final String DATA_FILE = "data/store_data.json";
+    private final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper()
+            .findAndRegisterModules();
+
+    public static class StoreSnapshot {
+        public Map<String, User> users;
+        public Map<String, Subject> subjects;
+        public Map<String, Unit> units;
+        public Map<String, Topic> topics;
+        public Map<String, StudySession> studySessions;
+        public Map<String, Exam> exams;
+        public Map<String, ClassSlot> classSlots;
+        public Map<String, AcademicEvent> academicEvents;
+    }
+
     public DataStore() {
         seedInitialData();
     }
 
+    private synchronized boolean loadFromDisk() {
+        try {
+            java.io.File file = new java.io.File(DATA_FILE);
+            if (!file.exists()) {
+                return false;
+            }
+            StoreSnapshot snap = mapper.readValue(file, StoreSnapshot.class);
+            if (snap != null && snap.users != null && !snap.users.isEmpty()) {
+                if (snap.users != null) users.putAll(snap.users);
+                if (snap.subjects != null) subjects.putAll(snap.subjects);
+                if (snap.units != null) units.putAll(snap.units);
+                if (snap.topics != null) topics.putAll(snap.topics);
+                if (snap.studySessions != null) studySessions.putAll(snap.studySessions);
+                if (snap.exams != null) exams.putAll(snap.exams);
+                if (snap.classSlots != null) classSlots.putAll(snap.classSlots);
+                if (snap.academicEvents != null) academicEvents.putAll(snap.academicEvents);
+                System.out.println("Loaded " + users.size() + " users and " + subjects.size() + " subjects from disk snapshot.");
+                return true;
+            }
+        } catch (Exception e) {
+            System.err.println("Warning: Could not load data from disk: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public synchronized void persistToDisk() {
+        try {
+            java.io.File file = new java.io.File(DATA_FILE);
+            java.io.File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            StoreSnapshot snap = new StoreSnapshot();
+            snap.users = new HashMap<>(users);
+            snap.subjects = new HashMap<>(subjects);
+            snap.units = new HashMap<>(units);
+            snap.topics = new HashMap<>(topics);
+            snap.studySessions = new HashMap<>(studySessions);
+            snap.exams = new HashMap<>(exams);
+            snap.classSlots = new HashMap<>(classSlots);
+            snap.academicEvents = new HashMap<>(academicEvents);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, snap);
+        } catch (Exception e) {
+            System.err.println("Warning: Could not persist data to disk: " + e.getMessage());
+        }
+    }
+
     private void seedInitialData() {
+        if (loadFromDisk()) {
+            return;
+        }
         // Default User
         User user = new User();
         user.setId("dev_user_student_1");
@@ -194,40 +259,56 @@ public class DataStore {
 
     // User CRUD
     public User getUser(String id) {
-        return users.computeIfAbsent(id, k -> {
-            User u = new User();
-            u.setId(k);
+        if (id == null || id.trim().isEmpty()) {
+            id = "dev_user_student_1";
+        }
+        User existing = users.get(id);
+        if (existing != null) {
+            return existing;
+        }
+        for (User u : users.values()) {
+            if (id.equalsIgnoreCase(u.getId()) || (u.getEmail() != null && id.equalsIgnoreCase(u.getEmail()))) {
+                return u;
+            }
+        }
+        User u = users.computeIfAbsent(id, k -> {
+            User newUser = new User();
+            newUser.setId(k);
             if ("dev_user_student_1".equals(k)) {
-                u.setEmail("student@univ.edu");
-                u.setFullName("Alex Morgan");
-                u.setCollegeName("MIT College of Engineering");
+                newUser.setEmail("student@univ.edu");
+                newUser.setFullName("Alex Morgan");
+                newUser.setCollegeName("MIT College of Engineering");
             } else {
                 String clean = k.replace("dev_user_", "").replace("user_", "");
                 if (clean.contains("@")) {
-                    u.setEmail(clean);
+                    newUser.setEmail(clean);
                     String name = clean.split("@")[0];
-                    u.setFullName(Character.toUpperCase(name.charAt(0)) + name.substring(1));
+                    newUser.setFullName(Character.toUpperCase(name.charAt(0)) + name.substring(1));
                 } else if (!clean.isEmpty()) {
-                    u.setFullName(Character.toUpperCase(clean.charAt(0)) + clean.substring(1));
-                    u.setEmail(clean + "@studyflow.ai");
+                    newUser.setFullName(Character.toUpperCase(clean.charAt(0)) + clean.substring(1));
+                    newUser.setEmail(clean + "@studyflow.ai");
                 } else {
-                    u.setFullName("New Student");
-                    u.setEmail("student@studyflow.ai");
+                    newUser.setFullName("New Student");
+                    newUser.setEmail("student@studyflow.ai");
                 }
             }
-            return u;
+            return newUser;
         });
+        persistToDisk();
+        return u;
     }
 
     public Optional<User> findUserByEmail(String email) {
         if (email == null || email.trim().isEmpty()) return Optional.empty();
+        final String target = email.trim().toLowerCase();
         return users.values().stream()
-                .filter(u -> email.equalsIgnoreCase(u.getEmail()))
+                .filter(u -> u.getEmail() != null && target.equalsIgnoreCase(u.getEmail().trim().toLowerCase()))
                 .findFirst();
     }
 
     public User saveUser(User user) {
         users.put(user.getId(), user);
+        persistToDisk();
         return user;
     }
 
@@ -358,6 +439,7 @@ public class DataStore {
         }
         subjects.put(subject.getId(), subject);
         populateSubjectHierarchy(subject);
+        persistToDisk();
         return subject;
     }
 
@@ -366,7 +448,9 @@ public class DataStore {
         topics.values().removeIf(t -> id.equals(t.getSubjectId()));
         studySessions.values().removeIf(s -> id.equals(s.getSubjectId()));
         exams.values().removeIf(e -> id.equals(e.getSubjectId()));
-        return subjects.remove(id) != null;
+        boolean removed = subjects.remove(id) != null;
+        if (removed) persistToDisk();
+        return removed;
     }
 
     // Unit CRUD
@@ -525,21 +609,29 @@ public class DataStore {
             slot.setId(UUID.randomUUID().toString());
         }
         classSlots.put(slot.getId(), slot);
+        persistToDisk();
         return slot;
     }
 
     public void saveClassSlots(List<ClassSlot> slots) {
         for (ClassSlot s : slots) {
-            saveClassSlot(s);
+            if (s.getId() == null || s.getId().isEmpty()) {
+                s.setId(UUID.randomUUID().toString());
+            }
+            classSlots.put(s.getId(), s);
         }
+        persistToDisk();
     }
 
     public void clearClassSlots(String userId) {
         classSlots.values().removeIf(cs -> userId.equals(cs.getUserId()));
+        persistToDisk();
     }
 
     public boolean deleteClassSlot(String id) {
-        return classSlots.remove(id) != null;
+        boolean removed = classSlots.remove(id) != null;
+        if (removed) persistToDisk();
+        return removed;
     }
 
     // AcademicEvent CRUD
@@ -555,16 +647,23 @@ public class DataStore {
             event.setId(UUID.randomUUID().toString());
         }
         academicEvents.put(event.getId(), event);
+        persistToDisk();
         return event;
     }
 
     public void saveAcademicEvents(List<AcademicEvent> events) {
         for (AcademicEvent ae : events) {
-            saveAcademicEvent(ae);
+            if (ae.getId() == null || ae.getId().isEmpty()) {
+                ae.setId(UUID.randomUUID().toString());
+            }
+            academicEvents.put(ae.getId(), ae);
         }
+        persistToDisk();
     }
 
     public boolean deleteAcademicEvent(String id) {
-        return academicEvents.remove(id) != null;
+        boolean removed = academicEvents.remove(id) != null;
+        if (removed) persistToDisk();
+        return removed;
     }
 }

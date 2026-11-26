@@ -29,10 +29,9 @@ class _AcademicProfileSetupScreenState extends ConsumerState<AcademicProfileSetu
   Future<void> _handleSaveAndNext() async {
     setState(() => _isSaving = true);
     try {
-      final repo = ref.read(apiRepositoryProvider);
       final col = _collegeCtrl.text.trim().isNotEmpty ? _collegeCtrl.text.trim() : 'Engineering Institute';
       final dept = _departmentCtrl.text.trim().isNotEmpty ? _departmentCtrl.text.trim() : 'Computer Science';
-      await repo.updateUserProfile({
+      await ref.read(authProvider.notifier).updateProfile({
         'college': col,
         'collegeName': col,
         'university': col,
@@ -41,7 +40,6 @@ class _AcademicProfileSetupScreenState extends ConsumerState<AcademicProfileSetu
         'semester': _selectedSemester,
         'academicYear': _academicYear,
       });
-      ref.invalidate(authProvider);
     } catch (_) {}
     if (mounted) {
       setState(() => _isSaving = false);

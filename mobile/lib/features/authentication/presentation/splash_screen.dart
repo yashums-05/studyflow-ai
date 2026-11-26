@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/providers.dart';
 
@@ -29,20 +30,29 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     _animController.forward();
 
     // Navigate after animation
-    Future.delayed(const Duration(milliseconds: 2200), () {
+    Future.delayed(const Duration(milliseconds: 1800), () async {
       if (!mounted) return;
-      final auth = ref.read(authProvider);
-      auth.when(
-        data: (user) {
-          if (user != null) {
-            context.go('/home');
-          } else {
-            context.go('/welcome');
-          }
-        },
-        loading: () => context.go('/welcome'),
-        error: (_, __) => context.go('/welcome'),
-      );
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('auth_token');
+        final isLoggedIn = prefs.getBool('is_logged_in') ?? (token != null && token.isNotEmpty);
+        final hasCachedProfile = prefs.getString('user_profile_json') != null;
+
+        if (isLoggedIn && ((token != null && token.isNotEmpty) || hasCachedProfile)) {
+          if (mounted) context.go('/home');
+          return;
+        }
+
+        final authUser = ref.read(authProvider).value;
+        if (authUser != null) {
+          if (mounted) context.go('/home');
+          return;
+        }
+
+        if (mounted) context.go('/welcome');
+      } catch (_) {
+        if (mounted) context.go('/welcome');
+      }
     });
   }
 

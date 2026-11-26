@@ -23,8 +23,7 @@ class _StudyPreferencesScreenState extends ConsumerState<StudyPreferencesScreen>
   Future<void> _saveAndFinish() async {
     setState(() => _isLoading = true);
     try {
-      final repo = ref.read(apiRepositoryProvider);
-      await repo.updateUserProfile({
+      await ref.read(authProvider.notifier).updateProfile({
         'preferences': {
           'studyStartTime': _startTime,
           'studyEndTime': _endTime,
@@ -41,7 +40,6 @@ class _StudyPreferencesScreenState extends ConsumerState<StudyPreferencesScreen>
         'studyEndTime': _endTime,
       });
       if (mounted) {
-        ref.invalidate(authProvider);
         context.go('/home');
       }
     } catch (e) {

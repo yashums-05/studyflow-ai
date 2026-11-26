@@ -97,6 +97,25 @@ public class AuthController {
             user.setEmail(email);
             String name = email.split("@")[0];
             user.setFullName(Character.toUpperCase(name.charAt(0)) + name.substring(1));
+            
+            String collegeName = (String) req.get("collegeName");
+            if (collegeName == null || collegeName.trim().isEmpty()) collegeName = (String) req.get("college");
+            if (collegeName == null || collegeName.trim().isEmpty()) collegeName = (String) req.get("university");
+            if (collegeName != null && !collegeName.trim().isEmpty()) user.setCollegeName(collegeName.trim());
+            else user.setCollegeName("Engineering Institute");
+
+            String department = (String) req.get("department");
+            if (department != null && !department.trim().isEmpty()) user.setDepartment(department.trim());
+            else user.setDepartment("Computer Science");
+
+            String degree = (String) req.get("degree");
+            if (degree != null && !degree.trim().isEmpty()) user.setDegree(degree.trim());
+            else user.setDegree("B.Tech");
+
+            Object semObj = req.get("semester");
+            user.setSemester(semObj instanceof Number ? ((Number) semObj).intValue() : 6);
+            user.setAcademicYear("2026-2027");
+
             dataStore.saveUser(user);
         }
 

@@ -388,8 +388,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 final col = collegeCtrl.text.trim().isNotEmpty ? collegeCtrl.text.trim() : 'Engineering Institute';
                 final dept = deptCtrl.text.trim().isNotEmpty ? deptCtrl.text.trim() : 'Computer Science';
                 
-                final repo = ref.read(apiRepositoryProvider);
-                await repo.updateUserProfile({
+                await ref.read(authProvider.notifier).updateProfile({
                   'college': col,
                   'collegeName': col,
                   'university': col,
@@ -399,7 +398,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   'academicYear': academicYear,
                 });
 
-                ref.invalidate(authProvider);
                 if (ctx.mounted) Navigator.pop(ctx);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -495,8 +493,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final repo = ref.read(apiRepositoryProvider);
-                await repo.updateUserProfile({
+                await ref.read(authProvider.notifier).updateProfile({
                   'preferences': {
                     'maximumDailyStudyHours': dailyHours,
                     'preferredSessionDuration': sessionMins,
@@ -513,7 +510,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   'studyEndTime': endTime,
                 });
 
-                ref.invalidate(authProvider);
                 if (ctx.mounted) Navigator.pop(ctx);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
