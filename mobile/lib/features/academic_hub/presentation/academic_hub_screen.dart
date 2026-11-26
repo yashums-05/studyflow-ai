@@ -1,4 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../../../core/services/native_file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -567,91 +570,414 @@ class _AcademicHubScreenState extends ConsumerState<AcademicHubScreen> with Sing
   // ==========================================
   void _showQuickUploadDialog(BuildContext context) {
     String selectedType = 'CLASS_TIMETABLE';
-    final textController = TextEditingController(
-      text: "Monday 09:00 - 10:00: Operating Systems\nMonday 10:00 - 11:00: Computer Networks\nWednesday 14:00 - 16:00: Systems Lab",
-    );
+    PickedDoc? pickedDoc;
+    bool isProcessing = false;
+    final textController = TextEditingController();
 
     showDialog(
       context: context,
+      barrierDismissible: !isProcessing,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Upload & AI Extract Schedule', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+        builder: (ctx, setDialogState) {
+          IconData getFileIcon(String? name) {
+            final ext = (name ?? '').toLowerCase();
+            if (ext.endsWith('.pdf')) return Icons.picture_as_pdf_rounded;
+            if (ext.endsWith('.docx') || ext.endsWith('.doc')) return Icons.description_rounded;
+            if (ext.endsWith('.png') || ext.endsWith('.jpg') || ext.endsWith('.jpeg')) return Icons.image_rounded;
+            return Icons.insert_drive_file_rounded;
+          }
+
+          Color getFileColor(String? name) {
+            final ext = (name ?? '').toLowerCase();
+            if (ext.endsWith('.pdf')) return Colors.redAccent;
+            if (ext.endsWith('.docx') || ext.endsWith('.doc')) return Colors.blueAccent;
+            if (ext.endsWith('.png') || ext.endsWith('.jpg') || ext.endsWith('.jpeg')) return Colors.teal;
+            return AppColors.primary;
+          }
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
               children: [
-                const Text('Select what you are uploading:', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: selectedType,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
-                  items: const [
-                    DropdownMenuItem(value: 'CLASS_TIMETABLE', child: Text('📅 Class Timetable (Routine)')),
-                    DropdownMenuItem(value: 'CALENDAR_OF_EVENTS', child: Text('🗓️ Calendar of Events / Holidays')),
-                    DropdownMenuItem(value: 'EXAM_TIMETABLE', child: Text('📝 Exam Schedule / Dates')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      setDialogState(() {
-                        selectedType = val;
-                        if (val == 'CALENDAR_OF_EVENTS') {
-                          textController.text = "Internal Assessment 1 (IA-1)\nCollege Sports Day (Holiday)\nSemester Finals";
-                        } else if (val == 'EXAM_TIMETABLE') {
-                          textController.text = "Computer Networks Final\nOperating Systems Final\nDatabase Systems Final";
-                        }
-                      });
-                    }
-                  },
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.document_scanner_rounded, color: AppColors.primary, size: 22),
                 ),
-                const SizedBox(height: 14),
-                const Text('Paste text, schedule, or routine:', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: textController,
-                  maxLines: 6,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Paste routine lines or calendar events...',
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Upload & Extract Schedule',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final txt = textController.text.trim();
-                if (txt.isEmpty) return;
-                Navigator.pop(ctx);
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('1. Select Document Category:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 6),
+                  DropdownButtonFormField<String>(
+                    value: selectedType,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'CLASS_TIMETABLE', child: Text('📅 Class Timetable (Routine)')),
+                      DropdownMenuItem(value: 'CALENDAR_OF_EVENTS', child: Text('🗓️ Calendar of Events / Holidays')),
+                      DropdownMenuItem(value: 'EXAM_TIMETABLE', child: Text('📝 Exam Schedule / Dates')),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setDialogState(() => selectedType = val);
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('AI is parsing and indexing your schedule...')),
-                );
+                  const Text('2. Upload Document (PDF, Word DOCX, Image):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 8),
 
-                try {
-                  final repo = ref.read(apiRepositoryProvider);
-                  await repo.uploadAndParseAcademicDoc(type: selectedType, rawText: txt);
-                  _refreshAll();
+                  if (pickedDoc == null)
+                    InkWell(
+                      onTap: () async {
+                        try {
+                          final doc = await NativeFilePicker.pickDocument();
+                          if (doc != null) {
+                            setDialogState(() {
+                              pickedDoc = doc;
+                            });
+                          }
+                        } catch (err) {
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(content: Text('File picker error: $err')),
+                            );
+                          }
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.35), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                          color: AppColors.primary.withValues(alpha: 0.04),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.cloud_upload_outlined, size: 36, color: AppColors.primary),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Tap to choose PDF, DOCX, or Image',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primary),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Supports: .pdf, .docx, .png, .jpg',
+                              style: TextStyle(fontSize: 11, color: AppColors.textSecondary.withValues(alpha: 0.8)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: getFileColor(pickedDoc!.name).withValues(alpha: 0.08),
+                        border: Border.all(color: getFileColor(pickedDoc!.name).withValues(alpha: 0.3)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(getFileIcon(pickedDoc!.name), color: getFileColor(pickedDoc!.name), size: 30),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  pickedDoc!.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${(pickedDoc!.size / 1024).toStringAsFixed(1)} KB',
+                                  style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 18),
+                            onPressed: () => setDialogState(() {
+                              pickedDoc = null;
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
 
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Schedule extracted & AI suggestions updated!')),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Upload failed: $e')),
-                    );
-                  }
-                }
-              },
-              icon: const Icon(Icons.auto_awesome),
-              label: const Text('Parse & Apply'),
+                  const SizedBox(height: 16),
+                  const Text('3. Optional: Paste Text Directly (or add notes):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: textController,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Optionally paste lines, dates, or subject times...',
+                      contentPadding: EdgeInsets.all(10),
+                    ),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: isProcessing ? null : () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: isProcessing ? null : () async {
+                  final txt = textController.text.trim();
+                  if (pickedDoc == null && txt.isEmpty) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      const SnackBar(content: Text('Please select a file or enter text to parse.')),
+                    );
+                    return;
+                  }
+
+                  setDialogState(() => isProcessing = true);
+
+                  try {
+                    final repo = ref.read(apiRepositoryProvider);
+                    final response = await repo.uploadAndParseAcademicDoc(
+                      type: selectedType,
+                      rawText: txt.isNotEmpty ? txt : null,
+                      fileBytes: pickedDoc?.bytes,
+                      fileName: pickedDoc?.name,
+                    );
+
+                    Navigator.pop(ctx);
+                    _refreshAll();
+
+                    if (mounted) {
+                      _showExtractionResultSheet(context, response);
+                    }
+                  } catch (e) {
+                    setDialogState(() => isProcessing = false);
+                    if (ctx.mounted) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(content: Text('Extraction error: $e'), backgroundColor: Colors.redAccent),
+                      );
+                    }
+                  }
+                },
+                icon: isProcessing
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.auto_awesome, size: 18),
+                label: Text(isProcessing ? 'Reading...' : 'Extract with AI'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showExtractionResultSheet(BuildContext context, Map<String, dynamic> response) {
+    final extractedText = response['extractedText']?.toString() ?? '(No text extracted)';
+    final filename = response['filename']?.toString() ?? 'Document';
+    final count = response['count'] ?? 0;
+    final message = response['message']?.toString() ?? 'Extraction completed';
+    final items = (response['items'] is List) ? (response['items'] as List) : [];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DefaultTabController(
+        length: 2,
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.82,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 6),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('AI Document Extraction', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                          const SizedBox(height: 2),
+                          Text('$filename • $count items structured', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+              ),
+              const TabBar(
+                labelColor: AppColors.primary,
+                unselectedLabelColor: AppColors.textSecondary,
+                indicatorColor: AppColors.primary,
+                tabs: [
+                  Tab(icon: Icon(Icons.article_outlined, size: 18), text: 'Extracted Text'),
+                  Tab(icon: Icon(Icons.check_circle_outline, size: 18), text: 'Parsed Schedule'),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    // TAB 1: Extracted Text
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Text Read from Document:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                              TextButton.icon(
+                                style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                                icon: const Icon(Icons.copy_rounded, size: 16),
+                                label: const Text('Copy Text', style: TextStyle(fontSize: 12)),
+                                onPressed: () {
+                                  Clipboard.setData(ClipboardData(text: extractedText));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Extracted text copied to clipboard!')),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: SingleChildScrollView(
+                                child: SelectableText(
+                                  extractedText,
+                                  style: const TextStyle(fontSize: 13, height: 1.45, fontFamily: 'monospace', color: AppColors.textPrimary),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // TAB 2: Parsed Schedule Items
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: items.isEmpty
+                          ? Center(
+                              child: Text(message, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+                            )
+                          : ListView.separated(
+                              itemCount: items.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 10),
+                              itemBuilder: (ctx, i) {
+                                final item = items[i];
+                                final title = item['subjectName'] ?? item['title'] ?? 'Scheduled Item';
+                                final timeOrDate = item['startTime'] != null
+                                    ? '${item['dayOfWeek'] ?? "Daily"} • ${item['startTime']} - ${item['endTime']}'
+                                    : (item['eventDate'] ?? item['examDate'] ?? 'Date TBD');
+                                final meta = item['room'] ?? item['eventType'] ?? item['venue'] ?? '';
+
+                                return Card(
+                                  elevation: 0,
+                                  color: Colors.grey.shade50,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(color: Colors.grey.shade200),
+                                  ),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                                      child: const Icon(Icons.event_available_rounded, color: AppColors.primary, size: 20),
+                                    ),
+                                    title: Text(title.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                    subtitle: Text(timeOrDate.toString(), style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                    trailing: meta.toString().isNotEmpty
+                                        ? Chip(
+                                            label: Text(meta.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                                            padding: EdgeInsets.zero,
+                                            visualDensity: VisualDensity.compact,
+                                          )
+                                        : null,
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Applied to your Academic Hub & Timetable!'), backgroundColor: AppColors.success),
+                      );
+                    },
+                    icon: const Icon(Icons.done_all_rounded),
+                    label: const Text('Apply to My Schedule', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

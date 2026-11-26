@@ -3,6 +3,7 @@ package com.studymate.ai.controller;
 import com.studymate.ai.dto.ScheduleSuggestion;
 import com.studymate.ai.model.*;
 import com.studymate.ai.repository.DataStore;
+import com.studymate.ai.service.DocumentParserService;
 import com.studymate.ai.service.ScheduleSuggestionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,12 @@ public class AcademicHubController {
 
     private final DataStore dataStore;
     private final ScheduleSuggestionService suggestionService;
+    private final DocumentParserService documentParserService;
 
-    public AcademicHubController(DataStore dataStore, ScheduleSuggestionService suggestionService) {
+    public AcademicHubController(DataStore dataStore, ScheduleSuggestionService suggestionService, DocumentParserService documentParserService) {
         this.dataStore = dataStore;
         this.suggestionService = suggestionService;
+        this.documentParserService = documentParserService;
     }
 
     private String getUserId(String auth) {
@@ -86,42 +89,49 @@ public class AcademicHubController {
 
         String userId = getUserId(auth);
         String textToParse = rawText != null ? rawText.trim() : "";
-        if (textToParse.isEmpty() && file != null && !file.isEmpty()) {
-            try {
-                textToParse = new String(file.getBytes());
-            } catch (Exception ignored) {
-                textToParse = "Uploaded file: " + file.getOriginalFilename();
+        String filename = "Direct Input";
+
+        if (file != null && !file.isEmpty()) {
+            filename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "document";
+            String extracted = documentParserService.extractTextFromFile(file);
+            if (extracted != null && !extracted.trim().isEmpty()) {
+                if (!textToParse.isEmpty()) {
+                    textToParse = textToParse + "\n\n" + extracted.trim();
+                } else {
+                    textToParse = extracted.trim();
+                }
             }
         }
 
         Map<String, Object> result = new HashMap<>();
         result.put("type", type);
+        result.put("filename", filename);
+        result.put("extractedText", textToParse);
         result.put("status", "success");
 
         if ("CLASS_TIMETABLE".equalsIgnoreCase(type)) {
-            // Parse or populate class slots
-            List<ClassSlot> parsedSlots = parseClassTimetable(userId, textToParse);
+            List<ClassSlot> parsedSlots = documentParserService.parseClassSlotsFromText(userId, textToParse);
             dataStore.saveClassSlots(parsedSlots);
             result.put("count", parsedSlots.size());
             result.put("items", parsedSlots);
-            result.put("message", "Successfully parsed and saved " + parsedSlots.size() + " class routine slots.");
+            result.put("message", "Extracted " + parsedSlots.size() + " class routine slots from " + filename + ".");
         } else if ("CALENDAR_OF_EVENTS".equalsIgnoreCase(type)) {
-            List<AcademicEvent> parsedEvents = parseCalendarEvents(userId, textToParse);
+            List<AcademicEvent> parsedEvents = documentParserService.parseEventsFromText(userId, textToParse);
             dataStore.saveAcademicEvents(parsedEvents);
             result.put("count", parsedEvents.size());
             result.put("items", parsedEvents);
-            result.put("message", "Successfully parsed and saved " + parsedEvents.size() + " academic calendar events.");
+            result.put("message", "Extracted " + parsedEvents.size() + " calendar events/holidays from " + filename + ".");
         } else if ("EXAM_TIMETABLE".equalsIgnoreCase(type)) {
-            List<Exam> parsedExams = parseExamTimetable(userId, textToParse);
+            List<Exam> parsedExams = documentParserService.parseExamsFromText(userId, textToParse);
             for (Exam e : parsedExams) {
                 dataStore.saveExam(e);
             }
             result.put("count", parsedExams.size());
             result.put("items", parsedExams);
-            result.put("message", "Successfully parsed and scheduled " + parsedExams.size() + " upcoming examinations.");
+            result.put("message", "Extracted " + parsedExams.size() + " examinations from " + filename + ".");
         } else {
             result.put("count", 1);
-            result.put("message", "Syllabus document received and indexed.");
+            result.put("message", "Document text extracted successfully from " + filename + ".");
         }
 
         return ResponseEntity.ok(result);

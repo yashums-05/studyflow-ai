@@ -1,8 +1,10 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/providers.dart';
+import '../../../core/services/native_file_picker.dart';
 
 class SyllabusUploadScreen extends ConsumerStatefulWidget {
   const SyllabusUploadScreen({super.key});
@@ -29,6 +31,46 @@ Demand Paging, Page Replacement Algorithms (FIFO, LRU, Optimal), Thrashing, Work
   bool _isAnalyzing = false;
   Map<String, dynamic>? _extractedData;
   bool _isSaving = false;
+  PickedDoc? _pickedDoc;
+
+  Future<void> _pickFileAndExtractText() async {
+    try {
+      final doc = await NativeFilePicker.pickDocument();
+      if (doc != null) {
+        setState(() {
+          _pickedDoc = doc;
+          _isAnalyzing = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Extracting text from ${doc.name}...')),
+        );
+
+        final repo = ref.read(apiRepositoryProvider);
+        final res = await repo.uploadAndParseAcademicDoc(
+          type: 'SYLLABUS',
+          fileBytes: doc.bytes,
+          fileName: doc.name,
+        );
+
+        final extracted = res['extractedText']?.toString() ?? '';
+        if (extracted.trim().isNotEmpty) {
+          _textCtrl.text = extracted;
+        }
+
+        // Trigger syllabus structure analysis
+        await _analyzeSyllabus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('File error: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isAnalyzing = false);
+    }
+  }
 
   Future<void> _analyzeSyllabus() async {
     if (_textCtrl.text.trim().isEmpty) return;
@@ -170,6 +212,52 @@ Demand Paging, Page Replacement Algorithms (FIFO, LRU, Optimal), Thrashing, Work
             const Text(
               'StudyFlow parses the outline using AI, extracts unit hierarchies and topics, and asks for your review before saving.',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            InkWell(
+              onTap: _isAnalyzing ? null : _pickFileAndExtractText,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.05),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.35), width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.upload_file_rounded, color: AppColors.primary, size: 28),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _pickedDoc != null ? _pickedDoc!.name : 'Choose Syllabus File (PDF, Word, Image)',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _pickedDoc != null
+                                ? '${((_pickedDoc!.size) / 1024).toStringAsFixed(1)} KB • Ready to extract'
+                                : 'Extracts text from PDF, DOCX, or Image automatically',
+                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Card(

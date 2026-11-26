@@ -221,14 +221,23 @@ class ApiRepository {
     required String type,
     String? rawText,
     String? filePath,
+    List<int>? fileBytes,
+    String? fileName,
   }) async {
+    MultipartFile? multipartFile;
+    if (filePath != null && filePath.isNotEmpty) {
+      final name = fileName ?? filePath.split('/').last.split('\\').last;
+      multipartFile = await MultipartFile.fromFile(filePath, filename: name);
+    } else if (fileBytes != null && fileBytes.isNotEmpty) {
+      multipartFile = MultipartFile.fromBytes(fileBytes, filename: fileName ?? 'document');
+    }
+
     final formData = FormData.fromMap({
       'type': type,
-      if (rawText != null) 'text': rawText,
-      if (filePath != null)
-        'file': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+      if (rawText != null && rawText.isNotEmpty) 'text': rawText,
+      if (multipartFile != null) 'file': multipartFile,
     });
     final res = await _dio.post(ApiConstants.academicUploadParse, data: formData);
-    return res.data;
+    return (res.data is Map) ? (res.data as Map<String, dynamic>) : {'status': 'success', 'data': res.data};
   }
 }
