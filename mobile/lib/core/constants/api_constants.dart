@@ -1,6 +1,6 @@
 class ApiConstants {
   // Configured default backend URL (Live Cloud Render Endpoint)
-  static const String defaultBaseUrl = "https://studymate-ai-uuvd.onrender.com/api/v1";
+  static const String defaultBaseUrl = "https://studyflow-ai-app.onrender.com/api/v1";
   
   // Auth Endpoints
   static const String authRegister = "/auth/register";

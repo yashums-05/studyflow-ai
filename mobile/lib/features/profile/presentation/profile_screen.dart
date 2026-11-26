@@ -548,7 +548,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               controller: controller,
               decoration: const InputDecoration(
                 labelText: 'Server Base URL',
-                hintText: 'https://studymate-ai-uuvd.onrender.com/api/v1',
+                hintText: 'https://studyflow-ai-app.onrender.com/api/v1',
                 border: const OutlineInputBorder(),
                 prefixIcon: Icon(Icons.dns_rounded),
               ),
