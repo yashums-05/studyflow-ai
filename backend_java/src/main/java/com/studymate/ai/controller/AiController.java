@@ -2,6 +2,7 @@ package com.studymate.ai.controller;
 
 import com.studymate.ai.dto.AiRequests;
 import com.studymate.ai.service.AiService;
+import com.studymate.ai.service.DocumentParserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/ai")
 public class AiController {
     private final AiService aiService;
+    private final DocumentParserService documentParserService;
 
-    public AiController(AiService aiService) {
+    public AiController(AiService aiService, DocumentParserService documentParserService) {
         this.aiService = aiService;
+        this.documentParserService = documentParserService;
     }
 
     private String getUserId(String auth) {
@@ -53,12 +56,16 @@ public class AiController {
 
     @PostMapping("/analyze-syllabus")
     public Map<String, Object> analyzeSyllabus(@RequestBody(required = false) Map<String, Object> payload) {
-        return Map.of(
-                "subjectName", "Software Engineering & Architecture",
-                "units", List.of(
-                        Map.of("unitNumber", 1, "title", "Software Requirements & Modeling", "topics", List.of("Functional vs Non-Functional Requirements", "Use Case Diagrams")),
-                        Map.of("unitNumber", 2, "title", "Architectural Styles & Design Patterns", "topics", List.of("MVC & Microservices", "Creational & Structural Patterns"))
-                )
-        );
+        String text = "";
+        if (payload != null) {
+            if (payload.containsKey("text") && payload.get("text") != null) {
+                text = payload.get("text").toString();
+            } else if (payload.containsKey("syllabusText") && payload.get("syllabusText") != null) {
+                text = payload.get("syllabusText").toString();
+            } else if (payload.containsKey("content") && payload.get("content") != null) {
+                text = payload.get("content").toString();
+            }
+        }
+        return documentParserService.parseSyllabusStructureFromText(text);
     }
 }

@@ -189,6 +189,16 @@ class ApiRepository {
     return QuizResponseModel.fromJson(res.data);
   }
 
+  Future<Map<String, dynamic>> analyzeSyllabus(String text) async {
+    final res = await _dio.post(ApiConstants.aiAnalyzeSyllabus, data: {
+      'text': text,
+    });
+    if (res.data is Map<String, dynamic>) {
+      return res.data as Map<String, dynamic>;
+    }
+    return {};
+  }
+
   // Academic Hub (Class Timetable, Calendar of Events, Suggestions, Uploads)
   Future<List<ClassSlotModel>> getClassTimetable() async {
     final res = await _dio.get(ApiConstants.academicClassTimetable);
