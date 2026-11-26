@@ -94,6 +94,11 @@ public class DocumentParserService {
         try (PDDocument doc = PDDocument.load(pdfBytes)) {
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setSortByPosition(true);
+            int total = doc.getNumberOfPages();
+            if (total > 35) {
+                stripper.setStartPage(1);
+                stripper.setEndPage(35);
+            }
             String text = stripper.getText(doc);
             if (text != null && text.trim().length() > 20) {
                 return text.trim();

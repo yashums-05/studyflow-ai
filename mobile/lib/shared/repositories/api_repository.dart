@@ -253,7 +253,14 @@ class ApiRepository {
       if (rawText != null && rawText.isNotEmpty) 'text': rawText,
       if (multipartFile != null) 'file': multipartFile,
     });
-    final res = await _dio.post(ApiConstants.academicUploadParse, data: formData);
+    final res = await _dio.post(
+      ApiConstants.academicUploadParse,
+      data: formData,
+      options: Options(
+        sendTimeout: const Duration(seconds: 120),
+        receiveTimeout: const Duration(seconds: 120),
+      ),
+    );
     return (res.data is Map) ? (res.data as Map<String, dynamic>) : {'status': 'success', 'data': res.data};
   }
 }

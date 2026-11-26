@@ -58,13 +58,23 @@ Demand Paging, Page Replacement Algorithms (FIFO, LRU, Optimal), Thrashing, Work
           _textCtrl.text = extracted;
         }
 
-        // Trigger syllabus structure analysis
-        await _analyzeSyllabus();
+        if (res.containsKey('syllabus') && res['syllabus'] is Map && (res['syllabus']['units'] as List? ?? []).isNotEmpty) {
+          setState(() {
+            _extractedData = Map<String, dynamic>.from(res['syllabus']);
+          });
+        } else {
+          // Trigger syllabus structure analysis
+          await _analyzeSyllabus();
+        }
       }
     } catch (e) {
       if (mounted) {
+        String msg = 'File upload error: $e';
+        if (e.toString().contains('timeout')) {
+          msg = 'Processing took too long. Please ensure your internet connection is stable and try again.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File error: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(msg), backgroundColor: AppColors.error),
         );
       }
     } finally {

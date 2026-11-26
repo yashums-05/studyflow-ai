@@ -129,6 +129,11 @@ public class AcademicHubController {
             result.put("count", parsedExams.size());
             result.put("items", parsedExams);
             result.put("message", "Extracted " + parsedExams.size() + " examinations from " + filename + ".");
+        } else if ("SYLLABUS".equalsIgnoreCase(type)) {
+            Map<String, Object> syllabus = documentParserService.parseSyllabusStructureFromText(textToParse);
+            result.put("syllabus", syllabus);
+            result.put("count", 1);
+            result.put("message", "Syllabus extracted and parsed successfully from " + filename + ".");
         } else {
             result.put("count", 1);
             result.put("message", "Document text extracted successfully from " + filename + ".");
