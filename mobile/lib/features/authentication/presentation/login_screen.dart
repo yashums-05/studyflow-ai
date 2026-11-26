@@ -36,8 +36,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String msg = 'Login failed: $e';
+        if (e.toString().contains('timeout')) {
+          msg = 'Cloud server is waking up. Please wait a moment and try again.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text(msg),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {

@@ -44,8 +44,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String msg = 'Registration error: $e';
+        if (e.toString().contains('timeout')) {
+          msg = 'Cloud server is waking up. Please wait a moment and try again.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration error: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text(msg),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {
