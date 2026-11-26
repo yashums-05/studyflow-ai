@@ -30,9 +30,13 @@ class _AcademicProfileSetupScreenState extends ConsumerState<AcademicProfileSetu
     setState(() => _isSaving = true);
     try {
       final repo = ref.read(apiRepositoryProvider);
+      final col = _collegeCtrl.text.trim().isNotEmpty ? _collegeCtrl.text.trim() : 'Engineering Institute';
+      final dept = _departmentCtrl.text.trim().isNotEmpty ? _departmentCtrl.text.trim() : 'Computer Science';
       await repo.updateUserProfile({
-        'collegeName': _collegeCtrl.text.trim().isNotEmpty ? _collegeCtrl.text.trim() : 'Engineering Institute',
-        'department': _departmentCtrl.text.trim().isNotEmpty ? _departmentCtrl.text.trim() : 'Computer Science',
+        'college': col,
+        'collegeName': col,
+        'university': col,
+        'department': dept,
         'degree': _selectedDegree,
         'semester': _selectedSemester,
         'academicYear': _academicYear,

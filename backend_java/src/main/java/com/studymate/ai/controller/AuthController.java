@@ -23,9 +23,18 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody Map<String, Object> req) {
         String email = (String) req.get("email");
         String fullName = (String) req.get("fullName");
+        
         String collegeName = (String) req.get("collegeName");
+        if (collegeName == null || collegeName.trim().isEmpty()) {
+            collegeName = (String) req.get("college");
+        }
+        if (collegeName == null || collegeName.trim().isEmpty()) {
+            collegeName = (String) req.get("university");
+        }
+
         String degree = (String) req.get("degree");
         String department = (String) req.get("department");
+        String academicYear = (String) req.get("academicYear");
         Object semObj = req.get("semester");
         Integer semester = semObj instanceof Number ? ((Number) semObj).intValue() : 6;
 
@@ -49,7 +58,14 @@ public class AuthController {
         if (collegeName != null && !collegeName.trim().isEmpty()) user.setCollegeName(collegeName.trim());
         if (degree != null && !degree.trim().isEmpty()) user.setDegree(degree.trim());
         if (department != null && !department.trim().isEmpty()) user.setDepartment(department.trim());
+        if (academicYear != null && !academicYear.trim().isEmpty()) user.setAcademicYear(academicYear.trim());
         if (semester != null) user.setSemester(semester);
+
+        if (req.containsKey("preferences") && req.get("preferences") instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> prefs = (Map<String, Object>) req.get("preferences");
+            user.setPreferences(prefs);
+        }
 
         dataStore.saveUser(user);
 

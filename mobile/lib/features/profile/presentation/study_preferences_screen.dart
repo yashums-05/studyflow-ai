@@ -32,7 +32,13 @@ class _StudyPreferencesScreenState extends ConsumerState<StudyPreferencesScreen>
           'preferredSessionDuration': _sessionMinutes,
           'shortBreakDuration': _breakMinutes,
           'preferredLearningStyle': _learningStyle,
-        }
+        },
+        'availableDailyStudyHours': _dailyHours,
+        'maximumDailyStudyHours': _dailyHours,
+        'preferredSessionDurationMinutes': _sessionMinutes,
+        'preferredBreakDurationMinutes': _breakMinutes,
+        'studyStartTime': _startTime,
+        'studyEndTime': _endTime,
       });
       if (mounted) {
         ref.invalidate(authProvider);

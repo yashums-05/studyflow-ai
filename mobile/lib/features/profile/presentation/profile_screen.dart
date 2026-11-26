@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/services/providers.dart';
+import '../../../shared/models/user_model.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -44,6 +45,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         error: (err, _) => Center(child: Text('Error: $err')),
         data: (user) {
           final u = user;
+          final universityName = (u?.college != null && u!.college.trim().isNotEmpty)
+              ? u.college.trim()
+              : 'Engineering Institute';
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -101,14 +106,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Academic Details',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Academic Details',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                            ),
+                            TextButton.icon(
+                              style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+                              icon: const Icon(Icons.edit_outlined, size: 15, color: AppColors.primary),
+                              label: const Text('Edit', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                              onPressed: () => _showEditAcademicDialog(context, u),
+                            ),
+                          ],
                         ),
-                        const Divider(height: 20),
-                        _buildInfoRow('University', u?.college ?? 'Engineering Institute'),
-                        _buildInfoRow('Department', u?.department ?? 'Computer Science'),
-                        _buildInfoRow('Academic Year', u?.academicYear ?? '2024-2025'),
+                        const Divider(height: 16),
+                        _buildInfoRow('University', universityName),
+                        _buildInfoRow('Department', (u?.department != null && u!.department.trim().isNotEmpty) ? u.department : 'Computer Science'),
+                        _buildInfoRow('Academic Year', (u?.academicYear != null && u!.academicYear.trim().isNotEmpty) ? u.academicYear : '2026-2027'),
                       ],
                     ),
                   ),
@@ -122,12 +138,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Study Configuration',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Study Configuration',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                            ),
+                            TextButton.icon(
+                              style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+                              icon: const Icon(Icons.tune_rounded, size: 15, color: AppColors.primary),
+                              label: const Text('Configure', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                              onPressed: () => _showEditPreferencesDialog(context, u),
+                            ),
+                          ],
                         ),
-                        const Divider(height: 20),
-                        _buildInfoRow('Daily Study Target', '${u?.preferences.maximumDailyStudyHours ?? 5.0} Hours'),
+                        const Divider(height: 16),
+                        _buildInfoRow('Daily Study Target', '${u?.preferences.maximumDailyStudyHours.toStringAsFixed(1) ?? "6.0"} Hours'),
                         _buildInfoRow('Pomodoro Focus Duration', '${u?.preferences.preferredSessionDuration ?? 45} Minutes'),
                         _buildInfoRow('Short Break Duration', '${u?.preferences.shortBreakDuration ?? 10} Minutes'),
                         _buildInfoRow('Active Study Window', '${u?.preferences.studyStartTime ?? "08:00"} - ${u?.preferences.studyEndTime ?? "22:00"}'),
@@ -176,7 +203,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Backend & Cloud Server Card
+                // Developer / Backend Settings Card
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -185,26 +212,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.cloud_sync_rounded, color: AppColors.primary),
+                            Icon(Icons.cloud_sync_rounded, size: 18, color: AppColors.primary),
                             SizedBox(width: 8),
                             Text(
-                              'Backend & Cloud Server',
+                              'Backend Connection',
                               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         const Text(
-                          'Connect to your local or deployed cloud backend for AI study planning and syncing.',
+                          'Connected API Endpoint:',
                           style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                         ),
-                        const SizedBox(height: 12),
-                        FutureBuilder<String>(
-                          future: SharedPreferences.getInstance().then(
-                            (p) => p.getString('api_base_url') ?? ApiConstants.defaultBaseUrl,
-                          ),
-                          builder: (context, snapshot) {
-                            final currentUrl = snapshot.data ?? ApiConstants.defaultBaseUrl;
+                        const SizedBox(height: 6),
+                        FutureBuilder<SharedPreferences>(
+                          future: SharedPreferences.getInstance(),
+                          builder: (context, snap) {
+                            final currentUrl = snap.data?.getString('api_base_url') ?? ApiConstants.defaultBaseUrl;
                             return Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -268,8 +293,238 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showEditAcademicDialog(BuildContext context, UserModel? u) {
+    final collegeCtrl = TextEditingController(text: u?.college ?? 'Engineering Institute');
+    final deptCtrl = TextEditingController(text: u?.department ?? 'Computer Science');
+    String degree = u?.degree ?? 'B.Tech';
+    int semester = u?.semester ?? 6;
+    String academicYear = u?.academicYear ?? '2026-2027';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Edit Academic Details', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('University / College', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 4),
+                TextField(
+                  controller: collegeCtrl,
+                  decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                ),
+                const SizedBox(height: 12),
+                const Text('Department / Major', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 4),
+                TextField(
+                  controller: deptCtrl,
+                  decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Degree', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          DropdownButtonFormField<String>(
+                            value: ['B.Tech', 'B.E', 'B.Sc', 'BCA', 'M.Tech', 'MCA', 'Other'].contains(degree) ? degree : 'B.Tech',
+                            decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                            items: ['B.Tech', 'B.E', 'B.Sc', 'BCA', 'M.Tech', 'MCA', 'Other']
+                                .map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 13))))
+                                .toList(),
+                            onChanged: (v) => setDialogState(() => degree = v!),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Semester', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          DropdownButtonFormField<int>(
+                            value: semester,
+                            decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+                            items: [1, 2, 3, 4, 5, 6, 7, 8]
+                                .map((e) => DropdownMenuItem(value: e, child: Text('Sem $e', style: const TextStyle(fontSize: 13))))
+                                .toList(),
+                            onChanged: (v) => setDialogState(() => semester = v!),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final col = collegeCtrl.text.trim().isNotEmpty ? collegeCtrl.text.trim() : 'Engineering Institute';
+                final dept = deptCtrl.text.trim().isNotEmpty ? deptCtrl.text.trim() : 'Computer Science';
+                
+                final repo = ref.read(apiRepositoryProvider);
+                await repo.updateUserProfile({
+                  'college': col,
+                  'collegeName': col,
+                  'university': col,
+                  'department': dept,
+                  'degree': degree,
+                  'semester': semester,
+                  'academicYear': academicYear,
+                });
+
+                ref.invalidate(authProvider);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Academic details updated successfully!'), backgroundColor: AppColors.success),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditPreferencesDialog(BuildContext context, UserModel? u) {
+    double dailyHours = u?.preferences.maximumDailyStudyHours ?? 6.0;
+    int sessionMins = u?.preferences.preferredSessionDuration ?? 45;
+    int breakMins = u?.preferences.shortBreakDuration ?? 10;
+    String startTime = u?.preferences.studyStartTime ?? "08:00";
+    String endTime = u?.preferences.studyEndTime ?? "22:00";
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Configure Study Schedule', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Daily Study Target:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                    Text('${dailyHours.toStringAsFixed(1)} hrs', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  ],
+                ),
+                Slider(
+                  value: dailyHours,
+                  min: 1.0,
+                  max: 10.0,
+                  divisions: 18,
+                  activeColor: AppColors.primary,
+                  onChanged: (v) => setDialogState(() => dailyHours = v),
+                ),
+                const SizedBox(height: 12),
+                const Text('Pomodoro Focus Duration', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                Row(
+                  children: [25, 45, 60].map((mins) {
+                    final sel = sessionMins == mins;
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: ChoiceChip(
+                          label: Center(child: Text('$mins m', style: TextStyle(fontSize: 12, color: sel ? Colors.white : AppColors.textPrimary))),
+                          selected: sel,
+                          selectedColor: AppColors.primary,
+                          onSelected: (_) => setDialogState(() => sessionMins = mins),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 12),
+                const Text('Short Break Duration', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                Row(
+                  children: [5, 10, 15].map((mins) {
+                    final sel = breakMins == mins;
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: ChoiceChip(
+                          label: Center(child: Text('$mins m', style: TextStyle(fontSize: 12, color: sel ? Colors.white : AppColors.textPrimary))),
+                          selected: sel,
+                          selectedColor: AppColors.primary,
+                          onSelected: (_) => setDialogState(() => breakMins = mins),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final repo = ref.read(apiRepositoryProvider);
+                await repo.updateUserProfile({
+                  'preferences': {
+                    'maximumDailyStudyHours': dailyHours,
+                    'preferredSessionDuration': sessionMins,
+                    'shortBreakDuration': breakMins,
+                    'studyStartTime': startTime,
+                    'studyEndTime': endTime,
+                    'preferredLearningStyle': u?.preferences.preferredLearningStyle ?? 'Visual & Practice',
+                  },
+                  'availableDailyStudyHours': dailyHours,
+                  'maximumDailyStudyHours': dailyHours,
+                  'preferredSessionDurationMinutes': sessionMins,
+                  'preferredBreakDurationMinutes': breakMins,
+                  'studyStartTime': startTime,
+                  'studyEndTime': endTime,
+                });
+
+                ref.invalidate(authProvider);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Study configuration saved!'), backgroundColor: AppColors.success),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
       ),
     );
   }
