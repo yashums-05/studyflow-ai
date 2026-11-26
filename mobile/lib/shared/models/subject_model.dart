@@ -19,7 +19,7 @@ class TopicModel {
     required this.unitId,
     required this.topicName,
     this.difficulty = 3,
-    this.estimatedMinutes = 60,
+    this.estimatedMinutes = 45,
     this.importance = 3,
     this.status = 'not_started',
     this.understandingRating,
@@ -28,32 +28,45 @@ class TopicModel {
   });
 
   factory TopicModel.fromJson(Map<String, dynamic> json) {
+    final tId = json['topicId']?.toString() ?? json['id']?.toString() ?? '';
+    final tName = json['topicName']?.toString() ?? json['name']?.toString() ?? 'Topic';
+    final diff = (json['difficulty'] as num?)?.toInt() ?? (json['difficultyLevel'] as num?)?.toInt() ?? 3;
+    final mins = (json['estimatedMinutes'] as num?)?.toInt() ?? (json['estimatedDurationMinutes'] as num?)?.toInt() ?? 45;
+    final imp = (json['importance'] as num?)?.toInt() ?? (json['importanceScore'] as num?)?.toInt() ?? 3;
+    final stat = json['status']?.toString() ?? json['completionStatus']?.toString() ?? 'not_started';
+
     return TopicModel(
-      topicId: json['topicId'] ?? '',
-      userId: json['userId'] ?? '',
-      subjectId: json['subjectId'] ?? '',
-      unitId: json['unitId'] ?? '',
-      topicName: json['topicName'] ?? '',
-      difficulty: json['difficulty'] ?? 3,
-      estimatedMinutes: json['estimatedMinutes'] ?? 60,
-      importance: json['importance'] ?? 3,
-      status: json['status'] ?? 'not_started',
-      understandingRating: json['understandingRating'],
-      priorityScore: (json['priorityScore'] as num?)?.toDouble() ?? 0.0,
-      notes: json['notes'],
+      topicId: tId,
+      userId: json['userId']?.toString() ?? '',
+      subjectId: json['subjectId']?.toString() ?? '',
+      unitId: json['unitId']?.toString() ?? '',
+      topicName: tName,
+      difficulty: diff,
+      estimatedMinutes: mins,
+      importance: imp,
+      status: stat,
+      understandingRating: (json['understandingRating'] as num?)?.toInt(),
+      priorityScore: (json['priorityScore'] as num?)?.toDouble() ?? (diff * imp).toDouble(),
+      notes: json['notes']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() => {
     'topicId': topicId,
+    'id': topicId,
     'userId': userId,
     'subjectId': subjectId,
     'unitId': unitId,
     'topicName': topicName,
+    'name': topicName,
     'difficulty': difficulty,
+    'difficultyLevel': difficulty,
     'estimatedMinutes': estimatedMinutes,
+    'estimatedDurationMinutes': estimatedMinutes,
     'importance': importance,
+    'importanceScore': importance,
     'status': status,
+    'completionStatus': status,
     'understandingRating': understandingRating,
     'priorityScore': priorityScore,
     'notes': notes,
@@ -80,22 +93,29 @@ class UnitModel {
   factory UnitModel.fromJson(Map<String, dynamic> json) {
     var rawTopics = json['topics'] as List? ?? [];
     List<TopicModel> topicsList = rawTopics.map((t) => TopicModel.fromJson(t)).toList();
+    final uId = json['unitId']?.toString() ?? json['id']?.toString() ?? '';
+    final uName = json['unitName']?.toString() ?? json['title']?.toString() ?? 'Unit';
+    final ord = (json['order'] as num?)?.toInt() ?? (json['orderIndex'] as num?)?.toInt() ?? (json['unitNumber'] as num?)?.toInt() ?? 1;
+
     return UnitModel(
-      unitId: json['unitId'] ?? '',
-      subjectId: json['subjectId'] ?? '',
-      userId: json['userId'] ?? '',
-      unitName: json['unitName'] ?? '',
-      order: json['order'] ?? 1,
+      unitId: uId,
+      subjectId: json['subjectId']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      unitName: uName,
+      order: ord,
       topics: topicsList,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'unitId': unitId,
+    'id': unitId,
     'subjectId': subjectId,
     'userId': userId,
     'unitName': unitName,
+    'title': unitName,
     'order': order,
+    'orderIndex': order,
     'topics': topics.map((t) => t.toJson()).toList(),
   };
 }
@@ -136,34 +156,65 @@ class SubjectModel {
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     var rawUnits = json['units'] as List? ?? [];
     List<UnitModel> unitsList = rawUnits.map((u) => UnitModel.fromJson(u)).toList();
+
+    int totalTop = (json['totalTopics'] as num?)?.toInt() ?? 0;
+    int compTop = (json['completedTopics'] as num?)?.toInt() ?? 0;
+
+    if (totalTop == 0 && unitsList.isNotEmpty) {
+      for (var u in unitsList) {
+        totalTop += u.topics.length;
+        for (var t in u.topics) {
+          if (t.status == 'completed') compTop++;
+        }
+      }
+    }
+
+    double compPct = (json['completionPercentage'] as num?)?.toDouble() ?? 0.0;
+    if (compPct == 0.0 && totalTop > 0) {
+      compPct = (compTop * 100.0) / totalTop;
+    }
+
+    final sId = json['subjectId']?.toString() ?? json['id']?.toString() ?? '';
+    final sName = json['subjectName']?.toString() ?? json['name']?.toString() ?? 'Subject';
+    final sCode = json['subjectCode']?.toString() ?? json['code']?.toString() ?? 'SUB101';
+    final diff = (json['difficulty'] as num?)?.toInt() ?? (json['difficultyLevel'] as num?)?.toInt() ?? 3;
+    final exDate = json['examDate']?.toString() ?? json['examinationDate']?.toString();
+    final estHrs = (json['estimatedHours'] as num?)?.toDouble() ?? (json['estimatedStudyHours'] as num?)?.toDouble() ?? 20.0;
+
     return SubjectModel(
-      subjectId: json['subjectId'] ?? '',
-      userId: json['userId'] ?? '',
-      subjectName: json['subjectName'] ?? '',
-      subjectCode: json['subjectCode'] ?? '',
-      semester: json['semester'] ?? 1,
-      difficulty: json['difficulty'] ?? 3,
-      colorHex: json['colorHex'] ?? "#7556D9",
-      examDate: json['examDate'],
-      estimatedHours: (json['estimatedHours'] as num?)?.toDouble() ?? 20.0,
-      totalUnits: json['totalUnits'] ?? unitsList.length,
-      totalTopics: json['totalTopics'] ?? 0,
-      completedTopics: json['completedTopics'] ?? 0,
-      completionPercentage: (json['completionPercentage'] as num?)?.toDouble() ?? 0.0,
+      subjectId: sId,
+      userId: json['userId']?.toString() ?? '',
+      subjectName: sName,
+      subjectCode: sCode,
+      semester: (json['semester'] as num?)?.toInt() ?? 6,
+      difficulty: diff,
+      colorHex: json['colorHex']?.toString() ?? "#7556D9",
+      examDate: exDate,
+      estimatedHours: estHrs,
+      totalUnits: (json['totalUnits'] as num?)?.toInt() ?? unitsList.length,
+      totalTopics: totalTop,
+      completedTopics: compTop,
+      completionPercentage: compPct,
       units: unitsList,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'subjectId': subjectId,
+    'id': subjectId,
     'userId': userId,
     'subjectName': subjectName,
+    'name': subjectName,
     'subjectCode': subjectCode,
+    'code': subjectCode,
     'semester': semester,
     'difficulty': difficulty,
+    'difficultyLevel': difficulty,
     'colorHex': colorHex,
     'examDate': examDate,
+    'examinationDate': examDate,
     'estimatedHours': estimatedHours,
+    'estimatedStudyHours': estimatedHours,
     'totalUnits': totalUnits,
     'totalTopics': totalTopics,
     'completedTopics': completedTopics,

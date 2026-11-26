@@ -243,7 +243,33 @@ public class DataStore {
                     .filter(s -> userId.equals(s.getUserId()))
                     .collect(Collectors.toList());
         }
+        list.forEach(this::populateSubjectHierarchy);
         return list;
+    }
+
+    public void populateSubjectHierarchy(Subject s) {
+        if (s == null) return;
+        List<Unit> unitList = getUnitsBySubject(s.getId());
+        int totalTop = 0;
+        int completedTop = 0;
+        for (Unit u : unitList) {
+            List<Topic> topicList = getTopicsByUnit(u.getId());
+            u.setTopics(topicList);
+            u.setTopicsCount(topicList.size());
+            totalTop += topicList.size();
+            for (Topic t : topicList) {
+                if ("completed".equalsIgnoreCase(t.getCompletionStatus())) {
+                    completedTop++;
+                }
+            }
+        }
+        s.setUnits(unitList);
+        s.setTotalUnits(unitList.size());
+        s.setTotalTopics(totalTop);
+        s.setCompletedTopics(completedTop);
+        if (totalTop > 0) {
+            s.setCompletionPercentage(Math.round((completedTop * 100.0 / totalTop) * 10.0) / 10.0);
+        }
     }
 
     private void initializeStarterSubjectsForUser(String userId) {
@@ -321,14 +347,17 @@ public class DataStore {
     }
 
     public Optional<Subject> getSubject(String id) {
-        return Optional.ofNullable(subjects.get(id));
+        Optional<Subject> opt = Optional.ofNullable(subjects.get(id));
+        opt.ifPresent(this::populateSubjectHierarchy);
+        return opt;
     }
 
     public Subject saveSubject(Subject subject) {
         if (subject.getId() == null || subject.getId().isEmpty()) {
-            subject.setId(UUID.randomUUID().toString());
+            subject.setId("sub_" + UUID.randomUUID().toString().substring(0, 8));
         }
         subjects.put(subject.getId(), subject);
+        populateSubjectHierarchy(subject);
         return subject;
     }
 
